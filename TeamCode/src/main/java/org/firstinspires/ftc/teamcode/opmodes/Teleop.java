@@ -4,29 +4,40 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.robot.Flywheel;
+import org.firstinspires.ftc.teamcode.robot.Intake;
 import org.firstinspires.ftc.teamcode.robot.Movement;
 import org.firstinspires.ftc.teamcode.robot.PedroMovement;
+import org.firstinspires.ftc.teamcode.robot.Turret;
 
 @TeleOp(name = "TeleOp")
 public class Teleop extends OpMode {
-    private PedroMovement movement = null;
-
-    private Pose startingPose = new Pose(0,0,0);
+    private PedroMovement movement;
+    private Intake intake;
+    private Turret turret;
+    private Flywheel flywheel;
 
     @Override
     public void init() {
-        movement = new PedroMovement(hardwareMap, telemetry, startingPose);
+        movement = new PedroMovement(hardwareMap, telemetry, new Pose(0, 0, 0));
+        intake = new Intake(hardwareMap);
+        turret = new Turret(hardwareMap);
+        flywheel = new Flywheel(hardwareMap);
     }
 
     @Override
     public void start() {
-        movement.startTeleop();
+        movement.getFollower().startTeleOpDrive();
     }
 
     @Override
     public void loop() {
+        movement.update(gamepad1, gamepad2);
 
-        movement.updateTeleOp(gamepad1, gamepad2);
+        turret.rotate(gamepad1.left_trigger - gamepad1.right_trigger);
 
+        if (gamepad1.leftBumperWasPressed()) intake.toggle();
+        if (gamepad1.rightBumperWasPressed()) flywheel.toggle();
+        if (gamepad1.triangleWasPressed()) turret.toggleHood();
     }
 }
