@@ -17,18 +17,19 @@ public class Intake {
     }
 
     public void toggle() {
-        isOn = !isOn;
         if (isOn)
-            start();
-        else
             stop();
+        else
+            start();
     }
 
     private void start() {
+        isOn = true;
         leftIntake.setPower(1);
         rightIntake.setPower(1);
     }
     private void stop() {
+        isOn = false;
         leftIntake.setPower(0);
         rightIntake.setPower(0);
     }

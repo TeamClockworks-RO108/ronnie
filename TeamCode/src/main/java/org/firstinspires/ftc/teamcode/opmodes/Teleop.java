@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.robot.Flywheel;
 import org.firstinspires.ftc.teamcode.robot.Intake;
@@ -16,13 +17,16 @@ public class Teleop extends OpMode {
     private Intake intake;
     private Turret turret;
     private Flywheel flywheel;
+    private ElapsedTime timer;
 
     @Override
     public void init() {
         movement = new PedroMovement(hardwareMap, telemetry, new Pose(0, 0, 0));
         intake = new Intake(hardwareMap);
         turret = new Turret(hardwareMap);
-        flywheel = new Flywheel(hardwareMap);
+        flywheel = new Flywheel(hardwareMap, telemetry);
+
+        timer = new ElapsedTime();
     }
 
     @Override
@@ -35,9 +39,13 @@ public class Teleop extends OpMode {
         movement.update(gamepad1, gamepad2);
 
         turret.rotate(gamepad1.left_trigger - gamepad1.right_trigger);
-
         if (gamepad1.leftBumperWasPressed()) intake.toggle();
         if (gamepad1.rightBumperWasPressed()) flywheel.toggle();
-        if (gamepad1.triangleWasPressed()) turret.toggleHood();
+        if (gamepad1.dpadUpWasPressed()) turret.toggleHood();
+
+        flywheel.update();
+
+        telemetry.addData("latency (ms)", timer.milliseconds());
+        timer.reset();
     }
 }

@@ -6,15 +6,18 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Turret {
+    private static final double HOOD_LIFTED = 0.8, HOOD_LOWERED = 0.2;
     private final CRServo headingServo1;
     private final CRServo headingServo2;
     private final Servo hoodServo;
+    private final Servo barrier;
     private boolean isHoodRaised = false;
 
     public Turret(HardwareMap hardwareMap) {
         headingServo1 = hardwareMap.get(CRServo.class, "heading1");
         headingServo2 = hardwareMap.get(CRServo.class, "heading2");
         hoodServo = hardwareMap.get(Servo.class, "hood");
+        barrier = hardwareMap.get(Servo.class, "barrier");
 
         headingServo2.setDirection(DcMotorSimple.Direction.REVERSE);
     }
@@ -24,17 +27,18 @@ public class Turret {
         headingServo2.setPower(power);
     }
     public void toggleHood() {
-        isHoodRaised = !isHoodRaised;
         if (isHoodRaised)
-            raiseHood();
-        else
             lowerHood();
+        else
+            liftHood();
     }
 
-    private void raiseHood() {
-        hoodServo.setPosition(1);
+    public void liftHood() {
+        isHoodRaised = true;
+        hoodServo.setPosition(HOOD_LIFTED);
     }
-    private void lowerHood() {
-        hoodServo.setPosition(0);
+    public void lowerHood() {
+        isHoodRaised = false;
+        hoodServo.setPosition(HOOD_LOWERED);
     }
 }
