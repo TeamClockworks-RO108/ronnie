@@ -9,6 +9,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Flywheel {
     private static final double SHOOTING_VELOCITY = 1300;
+
+    private static final double IDLE_VELOCITY = 500;
     private final DcMotorEx leftMotor;
     private final DcMotorEx rightMotor;
     private final Telemetry telemetry;
@@ -39,11 +41,16 @@ public class Flywheel {
         telemetry.addData("rightFlywheel TPS", rightMotor.getVelocity());
     }
 
-    private void start() {
+    public void start() {
         leftMotor.setVelocity(SHOOTING_VELOCITY);
         rightMotor.setVelocity(SHOOTING_VELOCITY);
     }
-    private void stop() {
+
+    public void idle(){
+        leftMotor.setVelocity(IDLE_VELOCITY);
+        rightMotor.setVelocity(IDLE_VELOCITY);
+    }
+   public void stop() {
         leftMotor.setVelocity(0);
         rightMotor.setVelocity(0);
     }

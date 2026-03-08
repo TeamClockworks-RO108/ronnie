@@ -7,10 +7,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class Turret {
     private static final double HOOD_LIFTED = 0.8, HOOD_LOWERED = 0.2;
+
+    private static final double BARRIER_ON = 0.47, BARRIER_OFF = 0.7;
     private final CRServo headingServo1;
     private final CRServo headingServo2;
     private final Servo hoodServo;
-    private final Servo barrier;
+    private Servo barrier;
     private boolean isHoodRaised = false;
 
     public Turret(HardwareMap hardwareMap) {
@@ -36,6 +38,14 @@ public class Turret {
     public void liftHood() {
         isHoodRaised = true;
         hoodServo.setPosition(HOOD_LIFTED);
+    }
+
+    public void liftBarrier() {
+        barrier.setPosition(BARRIER_OFF);
+    }
+
+    public void lowerBarrier() {
+        barrier.setPosition(BARRIER_ON);
     }
     public void lowerHood() {
         isHoodRaised = false;

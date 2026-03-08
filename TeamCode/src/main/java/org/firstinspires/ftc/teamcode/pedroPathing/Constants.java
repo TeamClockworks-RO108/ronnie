@@ -16,17 +16,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
             .mass(14)
-            .forwardZeroPowerAcceleration(-36.5)
-            .lateralZeroPowerAcceleration(-61.65)
+            .forwardZeroPowerAcceleration(-40.32)
+            .lateralZeroPowerAcceleration(-54.55)
             .useSecondaryTranslationalPIDF(false)
             .useSecondaryHeadingPIDF(false)
             .useSecondaryDrivePIDF(false)
             .centripetalScaling(0.00023)
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.18, 0.001, 0.01, 0.025))
-            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0, 0, 0, 0.025))
-            .headingPIDFCoefficients(new PIDFCoefficients(0.8, 0.001, 0.01, 0.025))
-            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(0, 0, 0, 0))
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0, 0, 0, 0.6, 0.025220627)
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.12, 0, 0.01, 0.03))
+            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.16, 0.0003, 0.015, 0.02))
+            .headingPIDFCoefficients(new PIDFCoefficients(1, 0.0, 0.07, 0))
+            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(2, 0, 0.09, 0))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.0065, 0, 0.00072, 0.6, 0)
             );
 
     public static MecanumConstants driveConstants = new MecanumConstants()
@@ -38,24 +38,24 @@ public class Constants {
             .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .xVelocity(87.1222)
-            .yVelocity(69.911)
+            .xVelocity(157.9222)
+            .yVelocity(40.1784)
             .useBrakeModeInTeleOp(true);
 
     public static ThreeWheelIMUConstants localizerConstants =
             new ThreeWheelIMUConstants()
-                    .forwardTicksToInches(.006086)
-                    .strafeTicksToInches(.001536)
-                    .turnTicksToInches(-.002026)
-                    .rightPodY(62 / (25.4)) // millimeters to inches
-                    .leftPodY(-62 / (25.4))
-                    .strafePodX(-150 / (25.4))
-                    .rightEncoder_HardwareMapName("rightFront") // set manually
-                    .leftEncoder_HardwareMapName("leftIntake")
-                    .strafeEncoder_HardwareMapName("leftFront")
+                    .forwardTicksToInches(.001976)
+                    .strafeTicksToInches(-.001986)
+                    .turnTicksToInches(.002026)
+                    .rightPodY(60.313 / (25.4)) // millimeters to inches
+                    .leftPodY(-59.887 / (25.4))
+                    .strafePodX(-139.76 / (25.4))
+                    .rightEncoder_HardwareMapName("leftIntake") // set manually
+                    .leftEncoder_HardwareMapName("leftFront")
+                    .strafeEncoder_HardwareMapName("rightFront")
                     .leftEncoderDirection(Encoder.FORWARD)
                     .rightEncoderDirection(Encoder.FORWARD)
-                    .strafeEncoderDirection(Encoder.REVERSE)
+                    .strafeEncoderDirection(Encoder.FORWARD)
                     .IMU_HardwareMapName("imu")
                     .IMU_Orientation(
                             new RevHubOrientationOnRobot(
