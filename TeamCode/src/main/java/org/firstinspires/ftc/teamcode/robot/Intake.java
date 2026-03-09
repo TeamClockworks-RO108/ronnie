@@ -1,29 +1,43 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import android.hardware.input.InputManager;
-
+import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.follower.Follower;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.opmodes.Teleop;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
+@Configurable
 public class Intake {
     private final DcMotor leftIntake;
     private final DcMotor rightIntake;
+
+
+    private static final double BARRIER_ON = 0.52, BARRIER_OFF = 0.7;
+
+    private static final double BARRIER_VIBRATE_AMPLITUDE = 0.004;
+
+    private static final double BARRIER_VIBRATE_TIME = 400;
+
+    private double lastVibrate;
+
+    private final CRServo headingServo1;
+    private final CRServo headingServo2;
+    private Servo barrier;
+    private boolean isHoodRaised = false;
 
     private double TIME_TO_SHOOT = 1000, TIME_TO_START_FLYWHEEL = 1000;
 
     private Flywheel flywheel;
 
-    private Turret turret;
 
     private enum State {
         IDLE,
         INTAKE,
-
         PREPARE_FOR_LAUNCH,
         LAUNCHING,
     }
@@ -42,14 +56,19 @@ public class Intake {
     private final StateMachine<State> fsm = new StateMachine<>(State.IDLE);
     private boolean isOn = false;
 
-    public Intake(HardwareMap hardwareMap, Telemetry telemetry) {
+    public Intake(HardwareMap hardwareMap, Telemetry telemetry, Follower follower) {
         leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
         rightIntake = hardwareMap.get(DcMotor.class, "rightIntake");
 
+        headingServo1 = hardwareMap.get(CRServo.class, "heading1");
+        headingServo2 = hardwareMap.get(CRServo.class, "heading2");
+        headingServo1.setDirection(DcMotorSimple.Direction.REVERSE);
+        barrier = hardwareMap.get(Servo.class, "barrier");
+
+
         leftIntake.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        flywheel = new Flywheel(hardwareMap, telemetry);
-        turret = new Turret(hardwareMap);
+        flywheel = new Flywheel(hardwareMap, telemetry, follower );
     }
 
 
@@ -66,11 +85,10 @@ public class Intake {
 
 
     public void setupFSM(){
-        fsm.init();
 
         fsm.onStateEnter(State.IDLE,   () -> {
             stop();
-            turret.lowerBarrier();
+            barrier.setPosition(BARRIER_ON);
             flywheel.idle();
         });
 
@@ -117,7 +135,7 @@ public class Intake {
 
         fsm.onStateEnter(State.LAUNCHING, () -> {
             start();
-            turret.liftBarrier();
+            barrier.setPosition(BARRIER_OFF);
 
         });
 
@@ -129,11 +147,11 @@ public class Intake {
         });
 
         fsm.onStateExit(State.LAUNCHING, () -> {
-            turret.lowerBarrier();
+            barrier.setPosition(BARRIER_ON);
             flywheel.idle();
         });
 
-
+        fsm.init();
 
 
     }
@@ -141,5 +159,22 @@ public class Intake {
     public void updateFSM(){
         fsm.update();
         flywheel.update();
+
+        double time = System.currentTimeMillis();
+
+        double barpos = barrier.getPosition();
+        if (Math.abs(barpos - BARRIER_OFF) < (BARRIER_VIBRATE_AMPLITUDE + 0.001) && time - lastVibrate > BARRIER_VIBRATE_TIME) {
+            lastVibrate = time;
+            if (barpos < BARRIER_OFF)
+                barrier.setPosition(BARRIER_OFF + BARRIER_VIBRATE_AMPLITUDE);
+            else
+                barrier.setPosition(BARRIER_OFF - BARRIER_VIBRATE_AMPLITUDE);
+        }
+
+    }
+
+    public void rotateTurret( double power){
+        headingServo1.setPower(power );
+        headingServo2.setPower(power);
     }
 }

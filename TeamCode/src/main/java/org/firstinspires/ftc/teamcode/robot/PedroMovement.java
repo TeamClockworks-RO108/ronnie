@@ -59,14 +59,14 @@ public class PedroMovement implements Subsystem {
         areControlsFlipped = true;
     }
 
-    public Follower getFollower() {
-        return follower;
-    }
-
     private void setTeleop(double y, double x, double heading) {
         if (!areControlsFlipped)
             follower.setTeleOpDrive(-y, -x, heading, false);
         else
             follower.setTeleOpDrive(y, x, heading, false);
+    }
+
+    public Follower getFollower(){
+        return follower;
     }
 }
