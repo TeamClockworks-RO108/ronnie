@@ -13,26 +13,20 @@ import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 @Configurable
 public class Intake {
-    private final DcMotor leftIntake;
-    private final DcMotor rightIntake;
-
-
-    private static final double BARRIER_ON = 0.52, BARRIER_OFF = 0.7;
+    private static final double BARRIER_ON = 0.5, BARRIER_OFF = 0.7;
 
     private static final double BARRIER_VIBRATE_AMPLITUDE = 0.004;
-
     private static final double BARRIER_VIBRATE_TIME = 400;
 
     private double lastVibrate;
 
-    private final CRServo headingServo1;
-    private final CRServo headingServo2;
-    private Servo barrier;
     private boolean isHoodRaised = false;
+    private double TIME_TO_SHOOT = 1000, TIME_TO_START_FLYWHEEL = 10;
 
-    private double TIME_TO_SHOOT = 1000, TIME_TO_START_FLYWHEEL = 1000;
-
-    private Flywheel flywheel;
+    private final DcMotor rightIntake;
+    private final DcMotor leftIntake;
+    private final Servo barrier;
+    private final Flywheel flywheel;
 
 
     private enum State {
@@ -60,9 +54,7 @@ public class Intake {
         leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
         rightIntake = hardwareMap.get(DcMotor.class, "rightIntake");
 
-        headingServo1 = hardwareMap.get(CRServo.class, "heading1");
-        headingServo2 = hardwareMap.get(CRServo.class, "heading2");
-        headingServo1.setDirection(DcMotorSimple.Direction.REVERSE);
+
         barrier = hardwareMap.get(Servo.class, "barrier");
 
 
@@ -173,8 +165,5 @@ public class Intake {
 
     }
 
-    public void rotateTurret( double power){
-        headingServo1.setPower(power );
-        headingServo2.setPower(power);
-    }
+
 }

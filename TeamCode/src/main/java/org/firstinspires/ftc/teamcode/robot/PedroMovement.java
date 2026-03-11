@@ -41,7 +41,7 @@ public class PedroMovement implements Subsystem {
         double y = gamepad1.left_stick_y + gamepad2.left_stick_y * FINE_POWER;
         double x = gamepad1.left_stick_x + gamepad2.left_stick_x * FINE_POWER;
         double heading = -gamepad1.right_stick_x - gamepad2.right_stick_x * FINE_POWER;
-        setTeleop(y, x, heading);
+        setTeleop(-y, -x, heading);
     }
 
     public void resetHeading(double heading) {
