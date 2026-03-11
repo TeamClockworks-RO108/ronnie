@@ -5,8 +5,11 @@ import com.pedropathing.geometry.Pose;
 public class Poses {
     protected final TeamColor color;
 
+    public Pose goalTarget;
+
     public Poses(TeamColor color) {
         this.color = color;
+        goalTarget = createPose(144-8, 144-8, 0);
     }
 
     protected Pose createPose(double x, double y, double heading) {

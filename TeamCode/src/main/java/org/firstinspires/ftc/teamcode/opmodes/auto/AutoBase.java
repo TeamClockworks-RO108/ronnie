@@ -31,7 +31,7 @@ public abstract class AutoBase extends OpMode {
         paths = new AutoPaths(movement.getFollower(), poses);
 
         intake = new Intake(hardwareMap, telemetry, movement.getFollower());
-        turret = new Turret(hardwareMap, telemetry, movement.getFollower());
+        turret = new Turret(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget);
 
         setupFSM();
     }

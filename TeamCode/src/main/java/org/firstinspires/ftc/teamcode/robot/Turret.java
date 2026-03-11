@@ -4,6 +4,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.control.PIDFController;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -13,12 +14,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @Configurable
 public class Turret {
-
-    private static double GOAL_X = 6, GOAL_Y = 138;
     private static double TICKS_PER_180 = 14610;
 
     private final Telemetry telemetry;
     private final Follower follower;
+    private final Pose goalTarget;
 
     private final PIDFController pid;
 
@@ -32,7 +32,7 @@ public class Turret {
 
     public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(1.4, 0, 0.1, 1);
 
-    public Turret (HardwareMap hardwareMap, Telemetry telemetry, Follower follower){
+    public Turret (HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose goalTarget){
         encoderMotor = hardwareMap.get(DcMotor.class, "rightIntake");
 
         headingMotor = hardwareMap.get(DcMotor.class, "heading");
@@ -40,6 +40,7 @@ public class Turret {
 
         this.telemetry = telemetry;
         this.follower = follower;
+        this.goalTarget = goalTarget;
 
         pid = new PIDFController(pidfCoefficients);
 
@@ -57,7 +58,7 @@ public class Turret {
 
         double robotx = follower.getPose().getX();
         double roboty = follower.getPose().getY();
-        double angleToGoal = - AngleUnit.normalizeRadians(Math.PI - Math.atan2(GOAL_Y - roboty, GOAL_X - robotx));
+        double angleToGoal = - AngleUnit.normalizeRadians(Math.PI - Math.atan2(goalTarget.getY() - roboty, goalTarget.getX() - robotx));
         double robotHeading =  AngleUnit.normalizeRadians(follower.getPose().getHeading() - Math.PI);
 
         double angleTurret = AngleUnit.normalizeRadians(angleToGoal - robotHeading);
@@ -67,7 +68,7 @@ public class Turret {
 
         pid.updateError(angleTurret - turretPosition);
         double power = pid.run();
-        // power = exponentialPowerAlgo(Math.abs(power)) * Math.signum(power);
+        power = exponentialPowerAlgo(Math.abs(power)) * Math.signum(power);
         if (!isOverride) {
             setTurretPower(-power);
         }

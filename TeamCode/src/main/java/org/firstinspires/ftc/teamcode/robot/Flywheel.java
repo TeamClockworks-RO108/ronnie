@@ -79,23 +79,25 @@ public class Flywheel {
             int index = -1;
 
             for (int i = 0; i < distances.length - 1; i++) {
-                if (distances[i] < distanceShoot && distances[i+1] > distanceShoot) {
+                if (distances[i] <= distanceShoot && distances[i+1] >= distanceShoot) {
                     index = i;
                     break;
                 }
             }
 
+
             if (index == -1) {
                 if (distanceShoot > farDistance)
-                    index = distances.length - 1;
+                    index = distances.length - 2;
                 else
                     index = 0;
             }
 
             double extraDistance = distanceShoot - distances[index];
             double totalDelta = distances[index + 1] - distances[index];
-            double coeff = extraDistance / totalDelta;
+            double coeff = totalDelta != 0 ? extraDistance / totalDelta : 0;
             coeff = Math.max(coeff, 0);
+            coeff = Math.min(coeff, 1);
 
             telemetry.addData("Flyheel Index:", index);
             telemetry.addData("Flywheel Coeff:", coeff);

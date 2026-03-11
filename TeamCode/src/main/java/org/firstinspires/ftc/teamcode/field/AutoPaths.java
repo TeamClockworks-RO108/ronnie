@@ -42,19 +42,19 @@ public class AutoPaths {
     private PathChain createPath(Pose first, Pose second) {
         return follower.pathBuilder()
                 .addPath(new BezierLine(first, second))
-                .setTangentHeadingInterpolation()
+                .setLinearHeadingInterpolation(first.getHeading(), second.getHeading())
                 .build();
     }
     private PathChain createPath(Pose first, Pose second, Pose third) {
         return follower.pathBuilder()
                 .addPath(new BezierCurve(first, second, third))
-                .setTangentHeadingInterpolation()
+                .setLinearHeadingInterpolation(first.getHeading(), third.getHeading())
                 .build();
     }
     private PathChain createIntakePath(Pose first, Pose second, Pose third) {
         return follower.pathBuilder()
                 .addPath(new BezierLine(first, second))
-                .setTangentHeadingInterpolation()
+                .setLinearHeadingInterpolation(first.getHeading(), second.getHeading())
                 .addPath(new BezierLine(second, third))
                 .setLinearHeadingInterpolation(second.getHeading(), third.getHeading())
                 .build();
