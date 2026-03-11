@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -48,11 +49,17 @@ public class PedroMovement implements Subsystem {
         follower.setPose(follower.getPose().setHeading(heading));
     }
 
+    public void followPath(PathChain path) {
+        follower.followPath(path);
+    }
     public void goToPose(Pose newPose) {
         follower.followPath(follower.pathBuilder()
                 .addPath(new BezierLine(follower.getPose(), newPose))
                 .setLinearHeadingInterpolation(follower.getHeading(), newPose.getHeading())
                 .build());
+    }
+    public boolean isBusy() {
+        return follower.isBusy();
     }
 
     public void flipControls() {

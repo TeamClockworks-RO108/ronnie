@@ -22,8 +22,8 @@ public class Flywheel {
     private static final double HOOD_LIFTED = 0.8, HOOD_LOWERED = 0.2;
 
     // tbd ok ok tbd
-    private static double farHood = 0.72, centerHood = 0.53, defaultHood = 0.58, closeHood = 0.20;
-    private static double farSpeed = 1500, centerSpeed = 1310, defaultSpeed = 1220, closeSpeed = 1000;
+    private static double farHood = 0.72, centerHood = 0.7, defaultHood = 0.55, closeHood = 0.20;
+    private static double farSpeed = 1500, centerSpeed = 1335, defaultSpeed = 1180, closeSpeed = 1000;
 
     private static double farDistance = 115, centerDistance = 82, defaultDistance = 47, closeDistance = 32;
 

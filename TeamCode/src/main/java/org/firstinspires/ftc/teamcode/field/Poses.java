@@ -1,14 +1,9 @@
-package field;
+package org.firstinspires.ftc.teamcode.field;
 
 import com.pedropathing.geometry.Pose;
 
-import field.TeamColor;
-
 public class Poses {
     protected final TeamColor color;
-    // shoot
-    protected static final double
-            SHOOT_OFFSET = 0;
 
     public Poses(TeamColor color) {
         this.color = color;

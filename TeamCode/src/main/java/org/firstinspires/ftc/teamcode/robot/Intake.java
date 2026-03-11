@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -13,7 +12,7 @@ import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 @Configurable
 public class Intake {
-    private static final double BARRIER_ON = 0.5, BARRIER_OFF = 0.7;
+    private static final double BARRIER_ON = 0.475, BARRIER_OFF = 0.7;
 
     private static final double BARRIER_VIBRATE_AMPLITUDE = 0.004;
     private static final double BARRIER_VIBRATE_TIME = 400;
@@ -21,7 +20,7 @@ public class Intake {
     private double lastVibrate;
 
     private boolean isHoodRaised = false;
-    private double TIME_TO_SHOOT = 1000, TIME_TO_START_FLYWHEEL = 10;
+    private int TIME_TO_SHOOT = 1000, TIME_TO_START_FLYWHEEL = 10;
 
     private final DcMotor rightIntake;
     private final DcMotor leftIntake;
@@ -60,7 +59,9 @@ public class Intake {
 
         leftIntake.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        flywheel = new Flywheel(hardwareMap, telemetry, follower );
+        flywheel = new Flywheel(hardwareMap, telemetry, follower);
+
+        setupFSM();
     }
 
 
@@ -148,7 +149,7 @@ public class Intake {
 
     }
 
-    public void updateFSM(){
+    public void update(){
         fsm.update();
         flywheel.update();
 
@@ -165,5 +166,8 @@ public class Intake {
 
     }
 
+    public long getShootTime() {
+        return TIME_TO_SHOOT + TIME_TO_START_FLYWHEEL;
+    }
 
 }
