@@ -33,7 +33,7 @@ public class TeleOpBlue extends OpMode {
         poses = new TeleOpPoses(color);
 
         movement = new PedroMovement(hardwareMap, telemetry, poses.teleOpStart);
-        intake = new Intake(hardwareMap, telemetry, movement.getFollower());
+        intake = new Intake(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget);
         turret = new Turret(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget);
 
         timer = new ElapsedTime();
@@ -53,7 +53,7 @@ public class TeleOpBlue extends OpMode {
         if (gamepad1.dpadUpWasPressed())
             movement.getFollower().setPose(new Pose(25, 120, Math.PI));
 
-        turret.manualOverride(gamepad1.right_trigger - gamepad1.left_trigger);
+        turret.manualOverride((gamepad1.right_trigger - gamepad1.left_trigger)/4);
 
         movement.update(gamepad1, gamepad2);
 

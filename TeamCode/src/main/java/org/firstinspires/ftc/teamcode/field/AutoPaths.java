@@ -13,7 +13,7 @@ public class AutoPaths {
     public PathChain GoalShootToHome;
 
     public PathChain goalToIntake3, goalToIntake2, goalToIntake1;
-    public PathChain goShootDefault3, goShootDefault2, goShootDefault1;
+    public PathChain intake3ToShoot, intake2ToShoot, intake1ToShoot;
 
     public AutoPaths(Follower follower, AutoPoses poses) {
         this.follower = follower;
@@ -34,9 +34,9 @@ public class AutoPaths {
         goalToIntake1 = createIntakePath(poses.goalShoot ,poses.intake1Prep, poses.intake1Take);
 
         // goal shoot paths
-        goShootDefault3 = createPath(poses.intake3Take, poses.goalShoot);
-        goShootDefault2 = createPath(poses.intake2Take, poses.gateCorner, poses.goalShoot);
-        goShootDefault1 = createPath(poses.intake1Take, poses.gateCorner, poses.goalShoot);
+        intake3ToShoot = createPath(poses.intake3Take, poses.goalShoot);
+        intake2ToShoot = createPath(poses.intake2Take, poses.gateCorner, poses.goalShoot);
+        intake1ToShoot = createPath(poses.intake1Take, poses.gateCorner, poses.goalShoot);
     }
 
     private PathChain createPath(Pose first, Pose second) {

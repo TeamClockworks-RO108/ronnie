@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -17,23 +18,21 @@ public class Flywheel {
     private final Telemetry telemetry;
 
     private final Follower follower;
-
     private final Servo hoodServo;
-    private static final double HOOD_LIFTED = 0.8, HOOD_LOWERED = 0.2;
 
-    // tbd ok ok tbd
     private static double farHood = 0.72, centerHood = 0.7, defaultHood = 0.55, closeHood = 0.20;
     private static double farSpeed = 1500, centerSpeed = 1335, defaultSpeed = 1180, closeSpeed = 1000;
 
     private static double farDistance = 115, centerDistance = 82, defaultDistance = 47, closeDistance = 32;
 
     public static final PIDFCoefficients constants = new PIDFCoefficients(300, 13, 5, 0);
+    private final Pose targetPose;
 
     public static double aimingTarget;
     public static double idleSpeed = 300;
     public boolean running = false;
 
-    public Flywheel(HardwareMap hardwareMap, Telemetry telemetry, Follower follower) {
+    public Flywheel(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose targetPose) {
         rightMotor = hardwareMap.get(DcMotorEx.class, "flywheel");
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
@@ -45,6 +44,7 @@ public class Flywheel {
 
         this.telemetry = telemetry;
         this.follower = follower;
+        this.targetPose = targetPose;
     }
 
     public double distanceToGoal() {

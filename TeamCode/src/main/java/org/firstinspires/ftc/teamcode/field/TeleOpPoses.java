@@ -7,6 +7,6 @@ public class TeleOpPoses extends Poses {
 
     public TeleOpPoses(TeamColor color) {
         super(color);
-        teleOpStart = createPose(144-25, 120, 0);
+        teleOpStart = createPose(144-24, 120, 0);
     }
 }

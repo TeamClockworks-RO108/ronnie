@@ -8,13 +8,13 @@ import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 @Autonomous(name = "Goal BLUE")
 public class GoalBlue extends AutoBase {
-    protected final StateMachine<State> fsm = new StateMachine<State>(State.START);
+    protected final StateMachine<State> fsm = new StateMachine<State>(State.START_TO_SHOOT);
     protected enum State {
         INIT,
-        START, SHOOT_PRELOAD,
-        FIRST_INTAKE, FIRST_INTAKE_TO_SHOOT, FIRST_SHOOT,
-        SECOND_INTAKE, SECOND_INTAKE_TO_SHOOT, SECOND_SHOOT,
-        THIRD_INTAKE, THIRD_INTAKE_TO_SHOOT, THIRD_SHOOT,
+        START_TO_SHOOT, SHOOT_PRELOAD,
+        INTAKE_A, INTAKE_TO_SHOOT_A, SHOOT_A,
+        INTAKE_B, INTAKE_TO_SHOOT_B, SHOOT_B,
+        INTAKE_C, INTAKE_TO_SHOOT_C, SHOOT_C,
         GO_HOME,
         DEAD
     }
@@ -31,23 +31,35 @@ public class GoalBlue extends AutoBase {
 
     @Override
     protected void setupFSM() {
-        fsm.onStateEnter(State.START, () -> {
+        // preload cycle
+        fsm.onStateEnter(State.START_TO_SHOOT, () -> {
             movement.followPath(paths.GoalStartToShoot);
             intake.command(Intake.Command.TOGGLE_INTAKE);
         });
-        fsm.onStateUpdate(State.START, (current, timeSinceTransition) ->
-                !movement.isBusy() && timeSinceTransition > 2000 ? State.SHOOT_PRELOAD : null);
+        fsm.onStateUpdate(State.START_TO_SHOOT, (current, timeSinceTransition) ->
+                !movement.isBusy() && timeSinceTransition > 3000 ? State.SHOOT_PRELOAD : null);
         fsm.onStateEnter(State.SHOOT_PRELOAD, () -> intake.command(Intake.Command.LAUNCH));
         fsm.onStateUpdate(State.SHOOT_PRELOAD, (current, timeSinceTransition) -> {
-            return timeSinceTransition > intake.getShootTime() ? State.FIRST_INTAKE : null;
+            return timeSinceTransition > intake.getShootTime() ? State.INTAKE_A : null;
         });
 
-        fsm.onStateEnter(State.FIRST_INTAKE, () -> movement.followPath(paths.goalToIntake3));
-        fsm.onStateUpdate(State.FIRST_INTAKE, () -> !movement.isBusy() ? State.FIRST_INTAKE_TO_SHOOT : null);
-        fsm.onStateEnter(State.FIRST_INTAKE_TO_SHOOT, () -> movement.followPath(paths.goShootDefault3));
-        fsm.onStateUpdate(State.FIRST_INTAKE_TO_SHOOT, () -> !movement.isBusy() ? State.FIRST_SHOOT : null);
-        fsm.onStateEnter(State.FIRST_SHOOT, () -> intake.command(Intake.Command.LAUNCH));
-        fsm.onStateUpdate(State.FIRST_SHOOT, (current, timeSinceTransition) -> {
+        // cycle A
+        fsm.onStateEnter(State.INTAKE_A, () -> movement.followPath(paths.goalToIntake3));
+        fsm.onStateUpdate(State.INTAKE_A, () -> !movement.isBusy() ? State.INTAKE_TO_SHOOT_A : null);
+        fsm.onStateEnter(State.INTAKE_TO_SHOOT_A, () -> movement.followPath(paths.intake3ToShoot));
+        fsm.onStateUpdate(State.INTAKE_TO_SHOOT_A, () -> !movement.isBusy() ? State.SHOOT_A : null);
+        fsm.onStateEnter(State.SHOOT_A, () -> intake.command(Intake.Command.LAUNCH));
+        fsm.onStateUpdate(State.SHOOT_A, (current, timeSinceTransition) -> {
+            return timeSinceTransition > intake.getShootTime() ? State.INTAKE_B : null;
+        });
+
+        // cycle B
+        fsm.onStateEnter(State.INTAKE_B, () -> movement.followPath(paths.goalToIntake2));
+        fsm.onStateUpdate(State.INTAKE_B, () -> !movement.isBusy() ? State.INTAKE_TO_SHOOT_B : null);
+        fsm.onStateEnter(State.INTAKE_TO_SHOOT_B, () -> movement.followPath(paths.intake2ToShoot));
+        fsm.onStateUpdate(State.INTAKE_TO_SHOOT_B, () -> !movement.isBusy() ? State.SHOOT_B : null);
+        fsm.onStateEnter(State.SHOOT_B, () -> intake.command(Intake.Command.LAUNCH));
+        fsm.onStateUpdate(State.SHOOT_B, (current, timeSinceTransition) -> {
             return timeSinceTransition > intake.getShootTime() ? State.GO_HOME : null;
         });
 
@@ -62,7 +74,7 @@ public class GoalBlue extends AutoBase {
 
     @Override
     protected void startFSM() {
-        fsm.onStateUpdate(State.INIT, () -> State.START);
+        fsm.onStateUpdate(State.INIT, () -> State.START_TO_SHOOT);
     }
 
     @Override

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -49,17 +50,13 @@ public class Intake {
     private final StateMachine<State> fsm = new StateMachine<>(State.IDLE);
     private boolean isOn = false;
 
-    public Intake(HardwareMap hardwareMap, Telemetry telemetry, Follower follower) {
+    public Intake(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose targetPose) {
         leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
         rightIntake = hardwareMap.get(DcMotor.class, "rightIntake");
-
-
         barrier = hardwareMap.get(Servo.class, "barrier");
-
+        flywheel = new Flywheel(hardwareMap, telemetry, follower, targetPose);
 
         leftIntake.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        flywheel = new Flywheel(hardwareMap, telemetry, follower);
 
         setupFSM();
     }
