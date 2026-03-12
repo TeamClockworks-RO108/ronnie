@@ -15,6 +15,8 @@ public class AutoPaths {
     public PathChain goalToIntake3, goalToIntake2, goalToIntake1;
     public PathChain intake3ToShoot, intake2ToShoot, intake1ToShoot;
 
+    public PathChain shootTogate, gateToShoot, turnBeforeShoot;
+
     public AutoPaths(Follower follower, AutoPoses poses) {
         this.follower = follower;
 
@@ -35,8 +37,14 @@ public class AutoPaths {
 
         // goal shoot paths
         intake3ToShoot = createPath(poses.intake3Take, poses.goalShoot);
-        intake2ToShoot = createPath(poses.intake2Take, poses.gateCorner, poses.goalShoot);
-        intake1ToShoot = createPath(poses.intake1Take, poses.gateCorner, poses.goalShoot);
+        intake2ToShoot = createPath(poses.intake2Take, poses.gateCorner, poses.centerAutoShoot);
+        intake1ToShoot = createPath(poses.intake1Take, poses.gateCorner, poses.centerAutoShoot);
+
+
+        //gate to shoot and vv paths
+        shootTogate = createIntakePath(poses.centerAutoShoot, poses.gateIntakePrep , poses.gateIntake);
+        turnBeforeShoot = createPath(poses.gateIntake,poses.gateTurnBeforeShoot);
+        gateToShoot = createPath(poses.gateTurnBeforeShoot, poses.centerAutoShoot);
     }
 
     private PathChain createPath(Pose first, Pose second) {

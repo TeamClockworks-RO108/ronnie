@@ -9,7 +9,7 @@ public class Poses {
 
     public Poses(TeamColor color) {
         this.color = color;
-        goalTarget = createPose(144-2.5, 144-2.5, 0);
+        goalTarget = createPose(144, 144-4, 0);
     }
 
     protected Pose createPose(double x, double y, double heading) {

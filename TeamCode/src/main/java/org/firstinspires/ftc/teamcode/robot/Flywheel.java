@@ -20,8 +20,8 @@ public class Flywheel {
     private final Follower follower;
     private final Servo hoodServo;
 
-    private static double farHood = 0.72, centerHood = 0.7, defaultHood = 0.55, closeHood = 0.20;
-    private static double farSpeed = 1500, centerSpeed = 1335, defaultSpeed = 1180, closeSpeed = 1000;
+    private static double farHood = 0.72, centerHood = 0.6, defaultHood = 0.42, closeHood = 0.20;
+    private static double farSpeed = 1500, centerSpeed = 1300, defaultSpeed = 1140, closeSpeed = 1000;
 
     private static double farDistance = 115, centerDistance = 82, defaultDistance = 47, closeDistance = 32;
 
@@ -52,8 +52,8 @@ public class Flywheel {
         double y = follower.getPose().getY();
 
         // coordinates of goal tune with limelight at runtime
-        double xx = x - 12;
-        double yy = y - 132;
+        double xx = x - 8;
+        double yy = y - 136;
 
         return Math.sqrt(xx * xx + yy * yy);
     }
