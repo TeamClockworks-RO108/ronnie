@@ -13,16 +13,14 @@ public class AutoPoses extends Poses {
     public Pose
             goalStart, goalHome,
             farStart, farHome;
-    public Pose goalShoot, centerAutoShoot, farShoot;
+    public Pose closeShoot, centerShoot, farShoot;
     public Pose
             intake3Prep, intake3Take,
             intake2Prep, intake2Take,
             intake1Prep, intake1Take;
-    public Pose
-            gateCorner,
-            gateOpenPrep, gateOpenEnd;
+    public Pose gateCorner;
 
-    public Pose gateIntake, gateIntakePrep, gateTurnBeforeShoot;
+    public Pose gateIntakeTake, gateIntakePrep, gateLeaveTurn;
 
     public AutoPoses(TeamColor color) {
         super(color);
@@ -32,8 +30,8 @@ public class AutoPoses extends Poses {
         goalHome = createPose(116, 90, 0);
 
         // shooting poses
-        goalShoot = createPose(96, 96, 0);
-        centerAutoShoot = createPose( 84, 84, 0 );
+        closeShoot = createPose(96, 96, 0);
+        centerShoot = createPose( 84, 84, 0 );
 
         // intake poses
         intake3Prep = createPose(INTAKE_START_X, INTAKE_3_Y, 0);
@@ -46,9 +44,8 @@ public class AutoPoses extends Poses {
         // gate poses
         gateCorner = createPose(115, 60, 0);
 
-        gateIntake = createPose ( 132.5, 57.57, 35);
-        gateIntakePrep = createPose( 114, 57.5, 35);
-
-        gateTurnBeforeShoot = createPose(100, 84, 0 );
+        gateIntakePrep = createPose(114, 57.5, 35);
+        gateIntakeTake = createPose(132.5, 57.57, 35);
+        gateLeaveTurn = createPose(100, 60, 0);
     }
 }

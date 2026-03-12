@@ -20,13 +20,14 @@ public class Flywheel {
     private final Follower follower;
     private final Servo hoodServo;
 
+    private final Pose targetPose;
+
     private static double farHood = 0.72, centerHood = 0.6, defaultHood = 0.42, closeHood = 0.20;
     private static double farSpeed = 1500, centerSpeed = 1300, defaultSpeed = 1140, closeSpeed = 1000;
 
     private static double farDistance = 115, centerDistance = 82, defaultDistance = 47, closeDistance = 32;
 
     public static final PIDFCoefficients constants = new PIDFCoefficients(300, 13, 5, 0);
-    private final Pose targetPose;
 
     public static double aimingTarget;
     public static double idleSpeed = 300;
@@ -51,11 +52,10 @@ public class Flywheel {
         double x = follower.getPose().getX();
         double y = follower.getPose().getY();
 
-        // coordinates of goal tune with limelight at runtime
-        double xx = x - 8;
-        double yy = y - 136;
+        double dx = x - targetPose.getX();
+        double dy = y - targetPose.getY();
 
-        return Math.sqrt(xx * xx + yy * yy);
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
 

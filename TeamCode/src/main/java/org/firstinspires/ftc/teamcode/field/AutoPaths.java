@@ -15,36 +15,37 @@ public class AutoPaths {
     public PathChain goalToIntake3, goalToIntake2, goalToIntake1;
     public PathChain intake3ToShoot, intake2ToShoot, intake1ToShoot;
 
-    public PathChain shootTogate, gateToShoot, turnBeforeShoot;
+    public PathChain shootTogate, gateToShoot;
 
     public AutoPaths(Follower follower, AutoPoses poses) {
         this.follower = follower;
 
         // preload paths
         GoalStartToShoot = follower.pathBuilder()
-                .addPath(new BezierLine(poses.goalStart, poses.goalShoot))
+                .addPath(new BezierLine(poses.goalStart, poses.centerShoot))
                 .setTangentHeadingInterpolation()
                 .setReversed()
                 .build();
 
         // go home paths
-        GoalShootToHome = createPath(poses.goalShoot, poses.goalHome);
+        GoalShootToHome = createPath(poses.centerShoot, poses.goalHome);
 
         // intake paths
-        goalToIntake3 = createIntakePath(poses.goalShoot, poses.intake3Prep, poses.intake3Take);
-        goalToIntake2 = createIntakePath(poses.goalShoot, poses.intake2Prep, poses.intake2Take);
-        goalToIntake1 = createIntakePath(poses.goalShoot ,poses.intake1Prep, poses.intake1Take);
+        goalToIntake3 = createIntakePath(poses.centerShoot, poses.intake3Prep, poses.intake3Take);
+        goalToIntake2 = createIntakePath(poses.centerShoot, poses.intake2Prep, poses.intake2Take);
+        goalToIntake1 = createIntakePath(poses.centerShoot,poses.intake1Prep, poses.intake1Take);
 
         // goal shoot paths
-        intake3ToShoot = createPath(poses.intake3Take, poses.goalShoot);
-        intake2ToShoot = createPath(poses.intake2Take, poses.gateCorner, poses.centerAutoShoot);
-        intake1ToShoot = createPath(poses.intake1Take, poses.gateCorner, poses.centerAutoShoot);
-
+        intake3ToShoot = createPath(poses.intake3Take, poses.centerShoot);
+        intake2ToShoot = createPath(poses.intake2Take, poses.gateCorner, poses.centerShoot);
+        intake1ToShoot = createPath(poses.intake1Take, poses.gateCorner, poses.centerShoot);
 
         //gate to shoot and vv paths
-        shootTogate = createIntakePath(poses.centerAutoShoot, poses.gateIntakePrep , poses.gateIntake);
-        turnBeforeShoot = createPath(poses.gateIntake,poses.gateTurnBeforeShoot);
-        gateToShoot = createPath(poses.gateTurnBeforeShoot, poses.centerAutoShoot);
+        shootTogate = createIntakePath(poses.centerShoot, poses.gateIntakePrep , poses.gateIntakeTake);
+        gateToShoot = follower.pathBuilder()
+                .addPath(new BezierCurve(poses.gateIntakeTake, poses.gateLeaveTurn, poses.centerShoot))
+                .setLinearHeadingInterpolation(poses.gateIntakeTake.getHeading(), poses.centerShoot.getHeading(), 0.8)
+                .build();
     }
 
     private PathChain createPath(Pose first, Pose second) {
