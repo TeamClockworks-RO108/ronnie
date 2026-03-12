@@ -46,17 +46,21 @@ public class TeleOpBlue extends OpMode {
 
     @Override
     public void loop() {
-
         if (gamepad1.rightBumperWasPressed())   intake.command(Intake.Command.TOGGLE_INTAKE);
         if (gamepad1.crossWasPressed())         intake.command(Intake.Command.LAUNCH);
+        if (gamepad1.circleWasPressed())        intake.command(Intake.Command.REJECT);
 
-        if (gamepad1.dpadUpWasPressed())
-            movement.getFollower().setPose(new Pose(25, 120, Math.PI));
+        // field centric reset
+        if (gamepad2.dpadUpWasPressed()) {
+            Pose current = movement.getFollower().getPose();
+            movement.getFollower().setPose(new Pose(current.getX(), current.getY(), poses.teleOpStart.getHeading()));
+        }
+        // gate reset
+        if (gamepad1.dpadRightWasPressed())
+            movement.getFollower().setPose(poses.gateReset);
 
-        if (gamepad1.circleWasPressed())
-            intake.command(Intake.Command.REJECT);
 
-        turret.manualOverride((gamepad1.right_trigger - gamepad1.left_trigger)/4);
+        turret.manualOverride((gamepad1.right_trigger - gamepad1.left_trigger + gamepad2.right_trigger - gamepad2.left_trigger)/4);
 
         movement.update(gamepad1, gamepad2);
 

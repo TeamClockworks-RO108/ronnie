@@ -32,7 +32,7 @@ public class Turret {
 
     public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(1.4, 0, 0.1, 1);
 
-    public Turret (HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose goalTarget){
+    public Turret (HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose goalTarget) {
         encoderMotor = hardwareMap.get(DcMotor.class, "rightIntake");
 
         headingMotor = hardwareMap.get(DcMotor.class, "heading");

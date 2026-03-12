@@ -22,10 +22,10 @@ public class Flywheel {
 
     private final Pose targetPose;
 
-    private static double farHood = 0.72, centerHood = 0.7, defaultHood = 0.35, closeHood = 0.20;
-    private static double farSpeed = 1500, centerSpeed = 1250, defaultSpeed = 1050, closeSpeed = 1000;
+    private static double farHood = 0.72, centerHood = 0.58, defaultHood = 0.3, closeHood = 0.2;
+    private static double farSpeed = 1500, centerSpeed = 1270, defaultSpeed = 1120, closeSpeed = 1000;
 
-    private static double farDistance = 115, centerDistance = 82, defaultDistance = 47, closeDistance = 32;
+    private static double farDistance = 115, centerDistance = 96, defaultDistance = 66, closeDistance = 32;
 
     public static final PIDFCoefficients constants = new PIDFCoefficients(300, 13, 5, 0);
 
@@ -48,17 +48,6 @@ public class Flywheel {
         this.targetPose = targetPose;
     }
 
-    public double distanceToGoal() {
-        double x = follower.getPose().getX();
-        double y = follower.getPose().getY();
-
-        double dx = x - targetPose.getX();
-        double dy = y - targetPose.getY();
-
-        return Math.sqrt(dx * dx + dy * dy);
-    }
-
-
     public void update() {
         double distanceShoot = distanceToGoal();
         telemetry.addData("fFlywheel TPS", rightMotor.getVelocity());
@@ -67,12 +56,12 @@ public class Flywheel {
         boolean changed = false;
 
         double roboty = follower.getPose().getY();
-        running = roboty > 30;
+        running = roboty > 0;
 
         if (running) {
             double calculatedVelocity = 0, hoodPosition = 0;
 
-            double [] distances = new double[] { closeDistance, defaultDistance, centerDistance, farDistance, farDistance };
+            double [] distances = new double[] { closeDistance, defaultDistance, centerDistance, farDistance, farDistance + 999};
             double [] speeds = new double[] { closeSpeed, defaultSpeed, centerSpeed, farSpeed, farSpeed };
             double [] hoods = new double[] { closeHood, defaultHood, centerHood, farHood, farHood };
 
@@ -99,7 +88,7 @@ public class Flywheel {
             coeff = Math.max(coeff, 0);
             coeff = Math.min(coeff, 1);
 
-            telemetry.addData("Flyheel Index:", index);
+            telemetry.addData("Flywheel Index:", index);
             telemetry.addData("Flywheel Coeff:", coeff);
 
             calculatedVelocity = speeds[index] * (1 - coeff) + speeds[index + 1] * coeff;
@@ -141,6 +130,18 @@ public class Flywheel {
         //            constants);
         //}
     }
+
+    public double distanceToGoal() {
+        double x = follower.getPose().getX();
+        double y = follower.getPose().getY();
+
+        double dx = x - targetPose.getX();
+        double dy = y - targetPose.getY();
+
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+
 
     public void start() {
         running = true;

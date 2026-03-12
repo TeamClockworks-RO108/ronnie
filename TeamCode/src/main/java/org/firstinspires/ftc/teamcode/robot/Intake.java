@@ -21,7 +21,7 @@ public class Intake {
     private double lastVibrate;
 
     private boolean isHoodRaised = false;
-    private int TIME_TO_SHOOT = 1000, TIME_TO_START_FLYWHEEL = 1500, TIME_TO_REJECT = 100;
+    private int TIME_TO_SHOOT = 800, TIME_TO_START_FLYWHEEL = 1500, TIME_TO_REJECT = 100;
 
     private final DcMotor rightIntake;
     private final DcMotor leftIntake;
@@ -164,7 +164,7 @@ public class Intake {
     }
 
     public long getShootTime() {
-        return TIME_TO_SHOOT + TIME_TO_START_FLYWHEEL;
+        return TIME_TO_SHOOT;
     }
 
 }
