@@ -53,6 +53,9 @@ public class TeleOpBlue extends OpMode {
         if (gamepad1.dpadUpWasPressed())
             movement.getFollower().setPose(new Pose(25, 120, Math.PI));
 
+        if (gamepad1.circleWasPressed())
+            intake.command(Intake.Command.REJECT);
+
         turret.manualOverride((gamepad1.right_trigger - gamepad1.left_trigger)/4);
 
         movement.update(gamepad1, gamepad2);

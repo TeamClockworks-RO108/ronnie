@@ -45,7 +45,7 @@ public class TripleGateBlue extends AutoBase{
             intake.command(Intake.Command.TOGGLE_INTAKE);
         });
         fsm.onStateUpdate(State.START_TO_SHOOT, (current, timeSinceTransition) ->
-                !movement.isBusy() && timeSinceTransition > 1500 ? State.SHOOT_PRELOAD : null);
+                !movement.isBusy() && timeSinceTransition > 2500 ? State.SHOOT_PRELOAD : null);
         fsm.onStateEnter(State.SHOOT_PRELOAD, () -> intake.command(Intake.Command.LAUNCH));
         fsm.onStateUpdate(State.SHOOT_PRELOAD, (current, timeSinceTransition) -> {
             return timeSinceTransition > intake.getShootTime() ? State.INTAKE_B : null;
@@ -114,7 +114,10 @@ public class TripleGateBlue extends AutoBase{
     private void setupGateCycle(State INTAKE, State INTAKE_TO_SHOOT, State SHOOT, State NEXT_STATE) {
         fsm.onStateEnter(INTAKE, () -> movement.followPath(paths.shootTogate));
         fsm.onStateUpdate(INTAKE, (current, timeSinceTransition) -> !movement.isBusy()  && timeSinceTransition > 4000 ? INTAKE_TO_SHOOT : null);
-        fsm.onStateEnter(INTAKE_TO_SHOOT, () -> movement.followPath(paths.gateToShoot));
+        fsm.onStateEnter(INTAKE_TO_SHOOT, () -> {
+            movement.followPath(paths.gateToShoot);
+            intake.command(Intake.Command.REJECT);
+        });
         fsm.onStateUpdate(INTAKE_TO_SHOOT, () -> !movement.isBusy() ? SHOOT : null);
         fsm.onStateEnter(SHOOT, () -> intake.command(Intake.Command.LAUNCH));
         fsm.onStateUpdate(SHOOT, (current, timeSinceTransition) -> {

@@ -22,8 +22,8 @@ public class Flywheel {
 
     private final Pose targetPose;
 
-    private static double farHood = 0.72, centerHood = 0.6, defaultHood = 0.42, closeHood = 0.20;
-    private static double farSpeed = 1500, centerSpeed = 1300, defaultSpeed = 1140, closeSpeed = 1000;
+    private static double farHood = 0.72, centerHood = 0.7, defaultHood = 0.35, closeHood = 0.20;
+    private static double farSpeed = 1500, centerSpeed = 1250, defaultSpeed = 1050, closeSpeed = 1000;
 
     private static double farDistance = 115, centerDistance = 82, defaultDistance = 47, closeDistance = 32;
 
@@ -67,7 +67,7 @@ public class Flywheel {
         boolean changed = false;
 
         double roboty = follower.getPose().getY();
-        running = roboty > 55;
+        running = roboty > 30;
 
         if (running) {
             double calculatedVelocity = 0, hoodPosition = 0;
