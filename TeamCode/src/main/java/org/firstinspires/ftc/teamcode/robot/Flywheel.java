@@ -22,22 +22,33 @@ public class Flywheel {
 
     private final Pose targetPose;
 
-    private static double farHood = 0.72, centerHood = 0.58, defaultHood = 0.3, closeHood = 0.2;
-    private static double farSpeed = 1500, centerSpeed = 1270, defaultSpeed = 1120, closeSpeed = 1000;
+    private static double farHood = 0.72, centerHood = 0.58, defaultHood = 0.65, closeHood = 0.2;
+    private static double farSpeed = 1500, centerSpeed = 1300, defaultSpeed = 1250, closeSpeed = 1100;
 
-    private static double farDistance = 115, centerDistance = 96, defaultDistance = 66, closeDistance = 32;
+    private static double farDistance = 115, centerDistance = 98, defaultDistance = 74, closeDistance = 58;
 
-    public static final PIDFCoefficients constants = new PIDFCoefficients(300, 13, 5, 0);
+    private static double TURRET_TO_ODOM = 139/25.4;
+
+
+
+    public static final PIDFCoefficients constants = new PIDFCoefficients();
+
+    public static double kp = 300, ki = 18, kd = 16, kf = 0;
 
     public static double aimingTarget;
     public static double idleSpeed = 300;
     public boolean running = false;
 
     public Flywheel(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose targetPose) {
+
+        constants.d = kd;
+        constants.p = kp;
+        constants.i = ki;
+        constants.f = kf;
+
         rightMotor = hardwareMap.get(DcMotorEx.class, "flywheel");
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
-                constants);
+
 
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -50,7 +61,7 @@ public class Flywheel {
 
     public void update() {
         double distanceShoot = distanceToGoal();
-        telemetry.addData("fFlywheel TPS", rightMotor.getVelocity());
+        telemetry.addData("Flywheel TPS", rightMotor.getVelocity());
         telemetry.addData("Distance to goal", distanceShoot);
 
         boolean changed = false;
@@ -110,30 +121,33 @@ public class Flywheel {
 
         if (changed) {
             rightMotor.setVelocity(aimingTarget);
-//            leftMotor.setVelocity(0);
 //            rightMotor.setVelocity(0);
         }
-        //  flywheel1.setVelocity(targetVelocity);
+        changed = constants.d != kd ||
+                constants.p != kp ||
+                constants.i != ki ||
+                constants.f != kf;
 
-        // Changed is reused here
-        //changed = constants.d != kd ||
-        //        constants.p != kp ||
-        //        constants.i != ki ||
-        //        constants.f != kf;
-
-        //if (changed) {
-        //    constants.d = kd;
-        //    constants.p = kp;
-        //    constants.i = ki;
-        //    constants.f = kf;
-        //    rightMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
-        //            constants);
-        //}
+        if (changed) {
+            constants.d = kd;
+            constants.p = kp;
+            constants.i = ki;
+            constants.f = kf;
+            rightMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
+                    constants);
+        }
     }
 
     public double distanceToGoal() {
         double x = follower.getPose().getX();
         double y = follower.getPose().getY();
+
+        double turretAngle = follower.getPose().getHeading();
+        double px = Math.cos(turretAngle) * TURRET_TO_ODOM;
+        double py = Math.sin(turretAngle) * TURRET_TO_ODOM;
+
+        x += px;
+        y += py;
 
         double dx = x - targetPose.getX();
         double dy = y - targetPose.getY();

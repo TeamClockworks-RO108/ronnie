@@ -47,9 +47,9 @@ public class Constants {
                     .forwardTicksToInches(.001976)
                     .strafeTicksToInches(-.001986)
                     .turnTicksToInches(.002026)
-                    .rightPodY(60.313 / (25.4)) // millimeters to inches
-                    .leftPodY(-59.887 / (25.4))
-                    .strafePodX(-139.76 / (25.4))
+                    .rightPodY(60 / (25.4)) // millimeters to inches
+                    .leftPodY(-60 / (25.4))
+                    .strafePodX(-4 / (25.4))
                     .rightEncoder_HardwareMapName("leftIntake") // set manually
                     .leftEncoder_HardwareMapName("leftFront")
                     .strafeEncoder_HardwareMapName("rightFront")
