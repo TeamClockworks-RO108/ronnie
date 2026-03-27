@@ -1,15 +1,19 @@
 package org.firstinspires.ftc.teamcode.field;
 
+import android.graphics.Point;
+
+import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 
 public class TeleOpPoses extends Poses {
     public Pose teleOpStart;
-    public Pose humanBase, gateReset;
+    public Pose humanBase, gateReset, gateResetCollect;
 
     public TeleOpPoses(TeamColor color) {
         super(color);
-        teleOpStart = createPose(120, 120, 0);
-        humanBase = createPose(144-9, 9, 0);
-        gateReset = createPose(127, 72, 0);
+        teleOpStart = createPose(129, 84, 0);
+        humanBase = createPose(9, 9, Math.toRadians(180));
+        gateReset =  createPose(129 - 9, 72, 0);
+        gateResetCollect  =  createPose(144-17, 72-16, 0);
     }
 }

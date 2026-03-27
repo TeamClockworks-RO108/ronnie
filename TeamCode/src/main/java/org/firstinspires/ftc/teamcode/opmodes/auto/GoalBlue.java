@@ -37,7 +37,7 @@ public class GoalBlue extends AutoBase {
             intake.command(Intake.Command.TOGGLE_INTAKE);
         });
         fsm.onStateUpdate(State.START_TO_SHOOT, (current, timeSinceTransition) ->
-                !movement.isBusy() && timeSinceTransition > 2500 ? State.SHOOT_PRELOAD : null);
+                !movement.isBusy() && timeSinceTransition > 9000 ? State.SHOOT_PRELOAD : null);
         fsm.onStateEnter(State.SHOOT_PRELOAD, () -> intake.command(Intake.Command.LAUNCH));
         fsm.onStateUpdate(State.SHOOT_PRELOAD, (current, timeSinceTransition) -> {
             return timeSinceTransition > intake.getShootTime() ? State.INTAKE_A : null;

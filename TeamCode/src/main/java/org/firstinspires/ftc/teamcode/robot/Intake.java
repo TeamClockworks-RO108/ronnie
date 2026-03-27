@@ -167,4 +167,12 @@ public class Intake {
         return TIME_TO_SHOOT;
     }
 
+    public void overrideTarget(long target){
+        flywheel.overrideTarget(target);
+    }
+
+
+    public Flywheel getFlywheel() {
+        return flywheel;
+    }
 }

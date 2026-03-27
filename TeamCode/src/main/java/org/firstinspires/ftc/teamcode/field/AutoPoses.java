@@ -7,20 +7,20 @@ public class AutoPoses extends Poses {
     protected static final double
             INTAKE_START_X = 98,
             INTAKE_3_END_X = 144-19, INTAKE_3_Y = 84,
-            INTAKE_2_END_X = 144-10.5, INTAKE_2_Y = INTAKE_3_Y - 24.3,
+            INTAKE_2_END_X = 144-15.5, INTAKE_2_Y = INTAKE_3_Y - 25.0,
             INTAKE_1_END_X = 144-10.5, INTAKE_1_Y = INTAKE_3_Y - 48;
 
     public Pose
             goalStart, goalHome,
-            farStart, farHome;
-    public Pose closeShoot, centerShoot, farShoot;
+            farStart, farHome, farShoot, farLeave;
+    public Pose closeShoot, centerShoot;
     public Pose
             intake3Prep, intake3Take,
             intake2Prep, intake2Take,
             intake1Prep, intake1Take;
     public Pose gateCorner;
 
-    public Pose gateIntakeTake, gateIntakePrep, gateLeaveTurn;
+    public Pose gateIntakeTake, gateIntakePrep, gateLeaveTurn, gateTurnBeforeShoot;
 
     public AutoPoses(TeamColor color) {
         super(color);
@@ -31,7 +31,11 @@ public class AutoPoses extends Poses {
 
         // shooting poses
         closeShoot = createPose(96, 96, 0);
-        centerShoot = createPose( 84, 84, 0 );
+        centerShoot = createPose( 86, 86, 0 );
+
+        farShoot = createPose (0,0 , 60 );
+        farLeave = createPose(5, 0, 0 );
+
 
         // intake poses
         intake3Prep = createPose(INTAKE_START_X, INTAKE_3_Y, 0);
@@ -41,11 +45,23 @@ public class AutoPoses extends Poses {
         intake1Prep = createPose(INTAKE_START_X, INTAKE_1_Y, 0);
         intake1Take = createPose(INTAKE_1_END_X, INTAKE_1_Y, 0);
 
+        //
+
         // gate poses
         gateCorner = createPose(115, 60, 0);
 
-        gateIntakePrep = createPose(114, 57.5, 35);
-        gateIntakeTake = createPose(132.5, 57.57, 35);
+        gateIntakeTake = createPose ( 132, 53.5, 36.5);
+        gateIntakePrep = createPose( 114, 53.5, 36.5);
+
+        gateTurnBeforeShoot = createPose(130, 53.5, 0 );
+
+
+
         gateLeaveTurn = createPose(100, 60, 0);
+    }
+
+    public void counterOffsetGate(){
+        gateIntakeTake = new Pose(gateIntakeTake.getX(), gateIntakePrep.getY() - 2.5);
+        gateIntakePrep = new Pose(gateIntakePrep.getX(), gateIntakePrep.getY() - 2.5);
     }
 }

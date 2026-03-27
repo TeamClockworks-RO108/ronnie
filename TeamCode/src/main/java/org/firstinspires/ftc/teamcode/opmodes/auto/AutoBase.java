@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.bylazar.telemetry.PanelsTelemetry;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.field.AutoPaths;
 import org.firstinspires.ftc.teamcode.field.AutoPoses;
 import org.firstinspires.ftc.teamcode.field.TeamColor;
@@ -21,8 +24,11 @@ public abstract class AutoBase extends OpMode {
     protected AutoPaths paths;
     protected Pose startingPose;
 
+    private Telemetry telemetry;
+
     @Override
     public void init() {
+        telemetry = new MultipleTelemetry(super.telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
         setColor();
         poses = new AutoPoses(color);
         setStartingPose();
@@ -31,13 +37,17 @@ public abstract class AutoBase extends OpMode {
         paths = new AutoPaths(movement.getFollower(), poses);
 
         intake = new Intake(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget);
-        turret = new Turret(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget);
+        turret = new Turret(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget, true, () -> 0.0);
+        intake.overrideTarget(1175);
+
+
 
         setupFSM();
     }
 
     @Override
     public void start() {
+
         startFSM();
     }
 

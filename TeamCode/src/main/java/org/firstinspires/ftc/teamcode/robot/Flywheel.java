@@ -15,6 +15,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Configurable
 public class Flywheel {
     private final DcMotorEx rightMotor;
+
+    private final DcMotorEx leftMotor;
     private final Telemetry telemetry;
 
     private final Follower follower;
@@ -22,22 +24,27 @@ public class Flywheel {
 
     private final Pose targetPose;
 
-    private static double farHood = 0.72, centerHood = 0.58, defaultHood = 0.65, closeHood = 0.2;
-    private static double farSpeed = 1500, centerSpeed = 1300, defaultSpeed = 1250, closeSpeed = 1100;
+    private static double farHood = 0.72, centerHood = 0.55, defaultHood = 0.48, closeHood = 0.28;
+    private static double farSpeed = 1200, centerSpeed = 1300, defaultSpeed = 1175, closeSpeed = 1125;
 
-    private static double farDistance = 115, centerDistance = 98, defaultDistance = 74, closeDistance = 58;
+    private static double farDistance = 115, centerDistance = 104, defaultDistance = 75, closeDistance = 58;
 
-    private static double TURRET_TO_ODOM = 139/25.4;
+    public static double TURRET_TO_ODOM = 4;
+
+    // DO NOT TOUCH THIS UNLESS NECESSARY
+    public static double CORR_OFFSET_ANGLE = 0;
 
 
 
     public static final PIDFCoefficients constants = new PIDFCoefficients();
 
-    public static double kp = 300, ki = 18, kd = 16, kf = 0;
+    public static double kp = 250, ki = 3, kd = 8, kf = 0;
 
     public static double aimingTarget;
     public static double idleSpeed = 300;
     public boolean running = false;
+
+    private long overrideTarget = -1;
 
     public Flywheel(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose targetPose) {
 
@@ -49,8 +56,13 @@ public class Flywheel {
         rightMotor = hardwareMap.get(DcMotorEx.class, "flywheel");
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        leftMotor = hardwareMap.get(DcMotorEx.class, "flywheel1");
+        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         hoodServo = hardwareMap.get(Servo.class, "hood");
 
@@ -61,7 +73,8 @@ public class Flywheel {
 
     public void update() {
         double distanceShoot = distanceToGoal();
-        telemetry.addData("Flywheel TPS", rightMotor.getVelocity());
+        telemetry.addData("Flywheel 1 TPS", rightMotor.getVelocity());
+        telemetry.addData("Flywheel 2 TPS", leftMotor.getVelocity());
         telemetry.addData("Distance to goal", distanceShoot);
 
         boolean changed = false;
@@ -119,10 +132,17 @@ public class Flywheel {
             }
         }
 
-        if (changed) {
+        if (changed && overrideTarget == -1) {
             rightMotor.setVelocity(aimingTarget);
-//            rightMotor.setVelocity(0);
+            leftMotor.setVelocity(aimingTarget);
         }
+        telemetry.addData("Flywheel Target TPS", -aimingTarget);
+
+        if (overrideTarget != -1) {
+            rightMotor.setVelocity(overrideTarget);
+            leftMotor.setVelocity(overrideTarget);
+        }
+
         changed = constants.d != kd ||
                 constants.p != kp ||
                 constants.i != ki ||
@@ -135,6 +155,8 @@ public class Flywheel {
             constants.f = kf;
             rightMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
                     constants);
+            leftMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
+                    constants);
         }
     }
 
@@ -142,7 +164,7 @@ public class Flywheel {
         double x = follower.getPose().getX();
         double y = follower.getPose().getY();
 
-        double turretAngle = follower.getPose().getHeading();
+        double turretAngle = follower.getPose().getHeading() + Math.toRadians(CORR_OFFSET_ANGLE);
         double px = Math.cos(turretAngle) * TURRET_TO_ODOM;
         double py = Math.sin(turretAngle) * TURRET_TO_ODOM;
 
@@ -167,5 +189,10 @@ public class Flywheel {
    public void stop() {
        running = false;
        aimingTarget = 0;
+    }
+
+    // Call with -1 to disable
+    public void overrideTarget(long speed)  {
+        this.overrideTarget = speed;
     }
 }
