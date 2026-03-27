@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.field.TeleOpPoses;
 import org.firstinspires.ftc.teamcode.robot.Intake;
 import org.firstinspires.ftc.teamcode.robot.PedroMovement;
 import org.firstinspires.ftc.teamcode.robot.Turret;
+import org.firstinspires.ftc.teamcode.robot.Vision;
 import org.firstinspires.ftc.teamcode.util.Drawing;
 
 @TeleOp(name = "TeleOp BLUE")
@@ -22,6 +23,7 @@ public class TeleOpBlue extends OpMode {
     protected PedroMovement movement;
     private Intake intake;
     private Turret turret;
+    private Vision vision;
 
     private ElapsedTime timer;
 
@@ -37,6 +39,7 @@ public class TeleOpBlue extends OpMode {
         movement = new PedroMovement(hardwareMap, telemetry, poses.teleOpStart);
         intake = new Intake(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget);
         turret = new Turret(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget, false, () -> Double.valueOf(gamepad1.right_stick_x));
+        vision = new Vision(hardwareMap, telemetry, movement.getFollower(), color);
 
         timer = new ElapsedTime();
     }
@@ -75,7 +78,8 @@ public class TeleOpBlue extends OpMode {
         if (gamepad1.dpadRightWasPressed()){
             movement.getFollower().setX(poses.gateResetCollect.getX());
             movement.getFollower().setY(poses.gateResetCollect.getY());}
-
+        // vision toggle pose updating (it's the button next to the dpad)
+        if (gamepad1.shareWasPressed()) vision.toggleFollowerUpdate();
 
         turret.manualOverride((gamepad1.right_trigger - gamepad1.left_trigger + gamepad2.right_trigger - gamepad2.left_trigger)/8);
 
@@ -83,6 +87,7 @@ public class TeleOpBlue extends OpMode {
 
         intake.update();
         turret.update();
+        vision.update();
 
         telemetry.addData("latency (ms)", timer.milliseconds());
         telemetry.update();
