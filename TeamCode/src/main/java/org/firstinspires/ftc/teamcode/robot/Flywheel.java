@@ -29,7 +29,7 @@ public class Flywheel {
 
     private static double farDistance = 115, centerDistance = 104, defaultDistance = 75, closeDistance = 58;
 
-    public static double TURRET_TO_ODOM = 4;
+    public static double TURRET_TO_ODOM = -1.0881954;
 
     // DO NOT TOUCH THIS UNLESS NECESSARY
     public static double CORR_OFFSET_ANGLE = 0;
