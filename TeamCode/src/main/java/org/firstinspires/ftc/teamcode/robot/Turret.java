@@ -69,10 +69,12 @@ public class Turret {
         if (reset) {
             encoderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             encoderMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            // This zeros the turret at each opmode start.
+            overrideCorrectionOffset = - getEncoder();
+        } else {
+            overrideCorrectionOffset = 0;
         }
 
-        // This zeros the turret at each opmode start.
-        overrideCorrectionOffset = - getEncoder();
     }
 
     private long getEncoder() {

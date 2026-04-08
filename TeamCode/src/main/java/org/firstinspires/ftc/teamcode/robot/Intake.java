@@ -51,11 +51,11 @@ public class Intake {
 
     private final StateMachine<State> fsm = new StateMachine<>(State.IDLE);
 
-    public Intake(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose targetPose) {
+    public Intake(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose targetPose, boolean isAuto) {
         leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
         rightIntake = hardwareMap.get(DcMotor.class, "rightIntake");
         barrier = hardwareMap.get(Servo.class, "barrier");
-        flywheel = new Flywheel(hardwareMap, telemetry, follower, targetPose);
+        flywheel = new Flywheel(hardwareMap, telemetry, follower, targetPose, isAuto);
 
         leftIntake.setDirection(DcMotorSimple.Direction.REVERSE);
 

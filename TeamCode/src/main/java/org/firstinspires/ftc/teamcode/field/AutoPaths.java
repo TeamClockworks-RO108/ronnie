@@ -17,6 +17,10 @@ public class AutoPaths {
 
     public PathChain shootTogate, gateToShoot, turnBeforeShoot;
 
+    public PathChain goPrepareCollectFromHuman, goPrepareCollectFromHuman2,  returnFromHuman, returnFromHuman2;
+
+    public PathChain turnToOpenGate;
+
     public PathChain leaveFar;
 
     public AutoPaths(Follower follower, AutoPoses poses) {
@@ -35,11 +39,12 @@ public class AutoPaths {
         // intake paths
         goalToIntake3 = createIntakePath(poses.centerShoot, poses.intake3Prep, poses.intake3Take);
         goalToIntake2 = createIntakePath(poses.centerShoot, poses.intake2Prep, poses.intake2Take);
-        goalToIntake1 = createIntakePath(poses.centerShoot,poses.intake1Prep, poses.intake1Take);
+        goalToIntake1 = createIntakePath(poses.centerShoot, poses.intake1Prep, poses.intake1Take);
 
+        turnToOpenGate = createPath(poses.intake2Take, poses.turnToOpenGate, poses.turnToOpenGate0);
         // goal shoot paths
         intake3ToShoot = createPath(poses.intake3Take, poses.centerShoot);
-        intake2ToShoot = createPath(poses.intake2Take, poses.gateCorner, poses.centerShoot);
+        intake2ToShoot = createPath(poses.turnToOpenGate0, poses.centerShoot);
         intake1ToShoot = createPath(poses.intake1Take, poses.gateCorner, poses.centerShoot);
 
 //        //gate to shoot and vv paths
@@ -49,16 +54,35 @@ public class AutoPaths {
 //                .setLinearHeadingInterpolation(poses.gateIntakeTake.getHeading(), poses.centerShoot.getHeading(), 0.8)
 //                .build();
 
-        shootTogate = createIntakePath(poses.centerShoot, poses.gateIntakePrep , poses.gateIntakeTake);
-        turnBeforeShoot = createPath(poses.gateIntakeTake,poses.gateTurnBeforeShoot);
-        gateToShoot = createPath(poses.gateIntakeTake, new Pose(85, 72, 0) , poses.centerShoot);
+        shootTogate = createIntakePath(poses.centerShoot, poses.gateIntakePrep, poses.gateIntakeTake);
+        turnBeforeShoot = createPath(poses.gateIntakeTake, poses.gateTurnBeforeShoot);
+        gateToShoot = createPath(poses.gateIntakeTake, new Pose(85, 72, 0), poses.centerShoot);
 
 
-        leaveFar = createPath( poses.farShoot, poses.farLeave);
+        leaveFar = createPath(poses.farShoot, poses.farLeave);
+
+        goPrepareCollectFromHuman = follower.pathBuilder()
+                .addPath(new BezierLine(poses.centerShoot, poses.goCollectFromHuman))
+                .setTangentHeadingInterpolation()
+                .build();
+
+        returnFromHuman = follower.pathBuilder()
+                .addPath(new BezierLine( poses.goCollectFromHuman, poses.centerShootFromHuman))
+                .setConstantHeadingInterpolation(poses.goCollectFromHuman.getHeading())
+                .build();
+
+        goPrepareCollectFromHuman2 = follower.pathBuilder()
+                .addPath(new BezierLine(poses.centerShootFromHuman, poses.goCollectFromHuman))
+                .setTangentHeadingInterpolation()
+                .build();
+
+        returnFromHuman2 = follower.pathBuilder()
+                .addPath(new BezierLine( poses.goCollectFromHuman, poses.centerShootFromHumanPlusLeave))
+                .setConstantHeadingInterpolation(poses.goCollectFromHuman.getHeading())
+                .build();
 
 
     }
-
     private PathChain createPath(Pose first, Pose second) {
         return follower.pathBuilder()
                 .addPath(new BezierLine(first, second))

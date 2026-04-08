@@ -11,7 +11,7 @@ public class TeleOpPoses extends Poses {
 
     public TeleOpPoses(TeamColor color) {
         super(color);
-        teleOpStart = createPose(129, 84, 0);
+        teleOpStart = createPose( 144 - 63.5, 109, - 70);
         humanBase = createPose(9, 9, Math.toRadians(180));
         gateReset =  createPose(129 - 9, 72, 0);
         gateResetCollect  =  createPose(144-17, 72-16, 0);

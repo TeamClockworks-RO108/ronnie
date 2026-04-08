@@ -36,9 +36,9 @@ public abstract class AutoBase extends OpMode {
         movement = new PedroMovement(hardwareMap, telemetry, startingPose);
         paths = new AutoPaths(movement.getFollower(), poses);
 
-        intake = new Intake(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget);
+        intake = new Intake(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget, true);
         turret = new Turret(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget, true, () -> 0.0);
-        intake.overrideTarget(1175);
+        intake.overrideTarget(1260);
 
 
 

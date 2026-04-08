@@ -38,15 +38,16 @@ public class Flywheel {
 
     public static final PIDFCoefficients constants = new PIDFCoefficients();
 
-    public static double kp = 250, ki = 3, kd = 8, kf = 0;
+    public static double kp = 250, ki = 3, kd = 13, kf = 0;
 
     public static double aimingTarget;
     public static double idleSpeed = 300;
     public boolean running = false;
+    public boolean isAuto;
 
     private long overrideTarget = -1;
 
-    public Flywheel(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose targetPose) {
+    public Flywheel(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose targetPose, boolean isAuto) {
 
         constants.d = kd;
         constants.p = kp;
@@ -64,11 +65,13 @@ public class Flywheel {
         leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
+
         hoodServo = hardwareMap.get(Servo.class, "hood");
 
         this.telemetry = telemetry;
         this.follower = follower;
         this.targetPose = targetPose;
+        this.isAuto = isAuto;
     }
 
     public void update() {
@@ -132,13 +135,13 @@ public class Flywheel {
             }
         }
 
-        if (changed && overrideTarget == -1) {
+        if (changed && !isAuto) {
             rightMotor.setVelocity(aimingTarget);
             leftMotor.setVelocity(aimingTarget);
         }
         telemetry.addData("Flywheel Target TPS", -aimingTarget);
 
-        if (overrideTarget != -1) {
+        if (isAuto) {
             rightMotor.setVelocity(overrideTarget);
             leftMotor.setVelocity(overrideTarget);
         }
@@ -192,7 +195,7 @@ public class Flywheel {
     }
 
     // Call with -1 to disable
-    public void overrideTarget(long speed)  {
+    public void overrideTarget(long  speed )  {
         this.overrideTarget = speed;
     }
 }
