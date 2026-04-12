@@ -121,7 +121,7 @@ public class Flywheel {
             calculatedVelocity = speeds[index] * (1 - coeff) + speeds[index + 1] * coeff;
             hoodPosition = hoods[index] * (1 - coeff) + hoods[index + 1] * coeff;
 
-            if (hoodServo.getPosition() != hoodPosition)
+            if (hoodServo.getPosition() != hoodPosition & !isAuto)
                 hoodServo.setPosition(hoodPosition);
 
             if (calculatedVelocity != aimingTarget) {
@@ -144,6 +144,7 @@ public class Flywheel {
         if (isAuto) {
             rightMotor.setVelocity(overrideTarget);
             leftMotor.setVelocity(overrideTarget);
+            hoodServo.setPosition(.53);
         }
 
         changed = constants.d != kd ||

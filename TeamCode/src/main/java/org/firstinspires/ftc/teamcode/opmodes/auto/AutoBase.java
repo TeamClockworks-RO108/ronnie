@@ -38,7 +38,7 @@ public abstract class AutoBase extends OpMode {
 
         intake = new Intake(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget, true);
         turret = new Turret(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget, true, () -> 0.0);
-        intake.overrideTarget(1260);
+        intake.overrideTarget(1240);
 
 
 
