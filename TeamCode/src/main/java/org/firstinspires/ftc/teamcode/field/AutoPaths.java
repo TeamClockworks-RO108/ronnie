@@ -43,7 +43,7 @@ public class AutoPaths {
 
         turnToOpenGate = createPath(poses.intake2Take, poses.turnToOpenGate, poses.turnToOpenGate0);
         // goal shoot paths
-        intake3ToShoot = createPath(poses.intake3Take, poses.centerShoot);
+        intake3ToShoot = createPath(poses.intake3Take, poses.centerShoot45);
         intake2ToShoot = createReverseTangentPath(poses.turnToOpenGate0, poses.centerShoot);
         intake1ToShoot = createReverseTangentPath(poses.intake1Take, poses.intake1Prep, poses.centerShootFromThird);
 
@@ -65,7 +65,7 @@ public class AutoPaths {
         leaveFar = createPath(poses.farShoot, poses.farLeave);
 
         goCollectFromHumanEvo = createTangentCurve(poses.centerShootFromThird, poses.intCollectFromHuman, poses.finalCollectFromHuman);
-        goCollectFromHumanEvo2 = createTangentCurve(poses.centerShootFromHuman, poses.intCollectFromHuman, poses.finalCollectFromHuman);
+        goCollectFromHumanEvo2 = createTangentCurve(poses.centerShootFromHuman, poses.intCollectFromHuman2, poses.finalCollectFromHuman2);
 
         goPrepareCollectFromHuman = follower.pathBuilder()
                 .addPath(new BezierLine(poses.centerShoot, poses.goCollectFromHuman))

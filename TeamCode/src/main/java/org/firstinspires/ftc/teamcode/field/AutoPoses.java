@@ -20,7 +20,7 @@ public class AutoPoses extends Poses {
             intake1Prep, intake1Take;
     public Pose gateCorner;
 
-    public Pose gateIntakeTake, turnToOpenGate, turnToOpenGate0,  gateIntakePrep, gateLeaveTurn, gateTurnBeforeShoot;
+    public Pose gateIntakeTake, turnToOpenGate, turnToOpenGate0,  gateIntakePrep, gateLeaveTurn, gateTurnBeforeShoot, centerShoot45, intCollectFromHuman2, finalCollectFromHuman2;
 
     public Pose prepareToCollectFromHuman, goCollectFromHuman;
     public Pose intCollectFromHuman, finalCollectFromHuman;
@@ -38,6 +38,7 @@ public class AutoPoses extends Poses {
         centerShootFromHuman = createPose( 144 - 64, 85,  - 70  );
         centerShootFromHumanPlusLeave = createPose( 144 - 63.5, 109, - 70);
         centerShootFromThird = createPose( 144 - 64, 85, - 90);
+        centerShoot45 = createPose( 144 - 64, 85, - 45);
 
         farShoot = createPose (0,0 , 60 );
         farLeave = createPose(5, 0, 0 );
@@ -69,7 +70,10 @@ public class AutoPoses extends Poses {
         goCollectFromHuman = createPose ( 120 , 22,  -80);
 
         intCollectFromHuman  = createPose (122, 45 , - 70);
-        finalCollectFromHuman  = createPose (130, 22 , - 85);
+        finalCollectFromHuman  = createPose (130, 20 , - 85);
+
+        intCollectFromHuman2  = createPose (122, 45 , - 70);
+        finalCollectFromHuman2  = createPose (130, 18, - 85);
 
 
 

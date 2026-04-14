@@ -77,7 +77,7 @@ public class TripleGateBlue extends AutoBase{
 
         //cycle A
         fsm.onStateEnter(State.INTAKE_A, () -> { movement.followPath(paths.goalToIntake3);
-            intake.overrideTarget(1325);} );
+            intake.overrideTarget(1340);} );
         fsm.onStateUpdate(State.INTAKE_A, () -> !movement.isBusy() ? State.INTAKE_TO_SHOOT_A : null);
         fsm.onStateEnter(State.INTAKE_TO_SHOOT_A, () -> movement.followPath(paths.intake3ToShoot));
         fsm.onStateUpdate(State.INTAKE_TO_SHOOT_A, (current, timeSinceTransition )  -> !movement.isBusy() && timeSinceTransition > waitForTurret? State.SHOOT_A  : null);
@@ -108,11 +108,10 @@ public class TripleGateBlue extends AutoBase{
         fsm.onStateUpdate(State.LAUNCH_1, (current, timeSinceTransition) -> { return  timeSinceTransition > intake.getShootTime() ? State.GO_COLLECT_FROM_HUMAN_2: null; } );
 
         //collectFromHuman2
-        fsm.onStateEnter(State.GO_COLLECT_FROM_HUMAN_2, () -> {movement.followPath(paths.goCollectFromHumanEvo2);});
+        fsm.onStateEnter(State.GO_COLLECT_FROM_HUMAN_2, () -> {movement.followPath(paths.goCollectFromHumanEvo2);  intake.overrideTarget(1150);});
         fsm.onStateUpdate(State.GO_COLLECT_FROM_HUMAN_2, (current, timeSinceTransition) -> !movement.isBusy() ? State.RETURN_TO_LAUNCH_2: null);
         fsm.onStateEnter(State.RETURN_TO_LAUNCH_2,() -> {
             movement.followPath(paths.returnFromHuman2);
-            intake.command(Intake.Command.REJECT);
         } );
         fsm.onStateUpdate (State.RETURN_TO_LAUNCH_2,  (current, timeSinceTransition) ->  !movement.isBusy() && timeSinceTransition > waitForTurret ?  State.LAUNCH_2 : null );
         fsm.onStateEnter(State.LAUNCH_2,   () -> { intake.command(Intake.Command.LAUNCH);});
