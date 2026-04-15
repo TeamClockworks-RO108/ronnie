@@ -73,9 +73,7 @@ public class AutoPoses extends Poses {
         finalCollectFromHuman  = createPose (130, 20 , - 85);
 
         intCollectFromHuman2  = createPose (122, 45 , - 70);
-        finalCollectFromHuman2  = createPose (130, 18, - 85);
-
-
+        finalCollectFromHuman2  = createPose (127, 21, - 85);
 
         gateLeaveTurn = createPose(100 - 9 , 60, 0);
     }

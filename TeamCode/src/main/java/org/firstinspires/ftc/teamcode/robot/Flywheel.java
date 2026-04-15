@@ -24,7 +24,7 @@ public class Flywheel {
 
     private final Pose targetPose;
 
-    private static double farHood = 0.72, centerHood = 0.55, defaultHood = 0.48, closeHood = 0.28;
+    private static double farHood = 0.72, centerHood = 0.59, defaultHood = 0.54, closeHood = 0.28;
     private static double farSpeed = 1200, centerSpeed = 1300, defaultSpeed = 1175, closeSpeed = 1125;
 
     private static double farDistance = 115, centerDistance = 104, defaultDistance = 75, closeDistance = 58;
@@ -144,7 +144,7 @@ public class Flywheel {
         if (isAuto) {
             rightMotor.setVelocity(overrideTarget);
             leftMotor.setVelocity(overrideTarget);
-            hoodServo.setPosition(.53);
+          //  hoodServo.setPosition(.53);
         }
 
         changed = constants.d != kd ||
