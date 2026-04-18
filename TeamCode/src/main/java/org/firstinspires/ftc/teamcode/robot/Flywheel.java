@@ -64,8 +64,6 @@ public class Flywheel {
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-
-
         hoodServo = hardwareMap.get(Servo.class, "hood");
 
         this.telemetry = telemetry;
@@ -144,7 +142,7 @@ public class Flywheel {
         if (isAuto) {
             rightMotor.setVelocity(overrideTarget);
             leftMotor.setVelocity(overrideTarget);
-          //  hoodServo.setPosition(.53);
+            hoodServo.setPosition(.53);
         }
 
         changed = constants.d != kd ||

@@ -19,7 +19,9 @@ import org.firstinspires.ftc.teamcode.util.Drawing;
 
 @Configurable
 public class Turret {
-    private static double TICKS_PER_180 = 14610;
+    private static final double TICKS_PER_180 = 14610;
+    private static final double RADIANS_TO_ENCODER_TICKS = TICKS_PER_180 / Math.PI;
+    private static final double AUTO_START_OFFSET = -4;
 
     private final Telemetry telemetry;
     private final Follower follower;
@@ -72,7 +74,8 @@ public class Turret {
             encoderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             encoderMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             // This zeros the turret at each opmode start.
-            overrideCorrectionOffset = - getEncoder();
+            // AND ALSO ADDS AN OFFSET!!
+            overrideCorrectionOffset = - getEncoder() + (long)(RADIANS_TO_ENCODER_TICKS * Math.toRadians(AUTO_START_OFFSET));
         } else {
             overrideCorrectionOffset = 0;
         }

@@ -29,7 +29,7 @@ public class AutoPoses extends Poses {
         super(color);
 
         // start specific poses
-        goalStart = createPose(144 - 30 ,121, 0);
+        goalStart = createPose(144 - 30,121, 0);
         goalHome = createPose(116, 90, 0);
 
         // shooting poses
@@ -70,10 +70,10 @@ public class AutoPoses extends Poses {
         goCollectFromHuman = createPose ( 120 , 22,  -80);
 
         intCollectFromHuman  = createPose (122, 45 , - 70);
-        finalCollectFromHuman  = createPose (130, 20 , - 85);
+        finalCollectFromHuman  = createPose (129, 18.5 , - 85);
 
         intCollectFromHuman2  = createPose (122, 45 , - 70);
-        finalCollectFromHuman2  = createPose (127, 21, - 85);
+        finalCollectFromHuman2  = createPose (129, 16, - 85);
 
         gateLeaveTurn = createPose(100 - 9 , 60, 0);
     }
