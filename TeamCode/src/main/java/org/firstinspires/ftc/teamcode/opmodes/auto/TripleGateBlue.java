@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.field.TeamColor;
 import org.firstinspires.ftc.teamcode.robot.Intake;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
-@Autonomous (name = "Golden Gate Labubu BLUE")
+@Autonomous (name = "Muie Labubu BLUE")
 public class TripleGateBlue extends AutoBase{
 
     protected StateMachine<State> fsm = new StateMachine<>(State.INIT);
@@ -52,7 +52,7 @@ public class TripleGateBlue extends AutoBase{
         fsm.onStateEnter(State.START_TO_SHOOT, () -> {
             movement.followPath(paths.GoalStartToShoot);
             intake.command(Intake.Command.TOGGLE_INTAKE);
-            intake.overrideTarget(1260);
+            intake.overrideTarget(1150);
         });
         fsm.onStateUpdate(State.START_TO_SHOOT, (current, timeSinceTransition) ->
                 !movement.isBusy() && timeSinceTransition > 400? State.SHOOT_PRELOAD : null);
@@ -63,7 +63,7 @@ public class TripleGateBlue extends AutoBase{
 
         // cycle B
         fsm.onStateEnter(State.INTAKE_B, () -> { movement.followPath(paths.goalToIntake2);
-            intake.overrideTarget(1230);
+            intake.overrideTarget(1265);
         });
         fsm.onStateUpdate(State.INTAKE_B, (current, timeSinceTransition) -> !movement.isBusy()? State.OPEN_GATE_AFTER_B : null);
         fsm.onStateEnter(State.OPEN_GATE_AFTER_B, () -> movement.followPath(paths.turnToOpenGate));
@@ -78,7 +78,7 @@ public class TripleGateBlue extends AutoBase{
 
         //cycle A
         fsm.onStateEnter(State.INTAKE_A, () -> { movement.followPath(paths.goalToIntake3);
-            intake.overrideTarget(1250);} );
+            intake.overrideTarget(1260);} );
         fsm.onStateUpdate(State.INTAKE_A, () -> !movement.isBusy() ? State.INTAKE_TO_SHOOT_A : null);
         fsm.onStateEnter(State.INTAKE_TO_SHOOT_A, () -> movement.followPath(paths.intake3ToShoot));
         fsm.onStateUpdate(State.INTAKE_TO_SHOOT_A, (current, timeSinceTransition )  -> !movement.isBusy() && timeSinceTransition > waitForTurret? State.SHOOT_A  : null);

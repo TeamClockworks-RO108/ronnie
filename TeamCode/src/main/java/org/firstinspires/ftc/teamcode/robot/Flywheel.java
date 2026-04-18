@@ -34,11 +34,9 @@ public class Flywheel {
     // DO NOT TOUCH THIS UNLESS NECESSARY
     public static double CORR_OFFSET_ANGLE = 0;
 
-
-
     public static final PIDFCoefficients constants = new PIDFCoefficients();
 
-    public static double kp = 250, ki = 3, kd = 13, kf = 0;
+    public static double kp = 250, ki = 3, kd = 14, kf = 0;
 
     public static double aimingTarget;
     public static double idleSpeed = 300;
@@ -142,7 +140,7 @@ public class Flywheel {
         if (isAuto) {
             rightMotor.setVelocity(overrideTarget);
             leftMotor.setVelocity(overrideTarget);
-            hoodServo.setPosition(.53);
+            hoodServo.setPosition(0.55);
         }
 
         changed = constants.d != kd ||

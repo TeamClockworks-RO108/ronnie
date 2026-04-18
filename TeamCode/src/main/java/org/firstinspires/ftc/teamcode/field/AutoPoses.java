@@ -61,7 +61,7 @@ public class AutoPoses extends Poses {
         gateIntakePrep = createPose( 114 - 9 , 61.5, 36.5);
 
         turnToOpenGate = createPose ( 144 - 26.5, 66 , -45);
-        turnToOpenGate0 = createPose ( 144 - 23 , 68.5, -90);
+        turnToOpenGate0 = createPose ( 144 - 23.4 , 68.5, -90);
         // turnToOpenGate0= createPose ( 130 - 27,  75,   -90 );
 
         gateTurnBeforeShoot = createPose(130 - 9 , 63.5, 0 );
@@ -72,8 +72,8 @@ public class AutoPoses extends Poses {
         intCollectFromHuman  = createPose (122, 45 , - 70);
         finalCollectFromHuman  = createPose (129, 18.5 , - 85);
 
-        intCollectFromHuman2  = createPose (122, 45 , - 70);
-        finalCollectFromHuman2  = createPose (129, 16, - 85);
+        intCollectFromHuman2  = createPose (125, 45 , - 70);
+        finalCollectFromHuman2  = createPose (130, 16, - 85);
 
         gateLeaveTurn = createPose(100 - 9 , 60, 0);
     }

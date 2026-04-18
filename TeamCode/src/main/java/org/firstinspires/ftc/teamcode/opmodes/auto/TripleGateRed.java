@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.field.TeamColor;
 
-@Autonomous(name = "Golden gate Labubu RED")
+@Autonomous(name = "Muie Labubu RED")
 public class TripleGateRed extends TripleGateBlue {
     @Override
     protected void setColor() {
