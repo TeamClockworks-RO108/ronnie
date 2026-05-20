@@ -29,16 +29,16 @@ public class AutoPoses extends Poses {
         super(color);
 
         // start specific poses
-        goalStart = createPose(144 - 30,121, 0);
+        goalStart = createPose(144 - 24, 144 - 24, 0);
         goalHome = createPose(116, 90, 0);
 
         // shooting poses
-      //   closeShoot = createPose(144- 38 - 20, 124 - 20, 0);
-        centerShoot = createPose( 144 - 64, 85, 0 );
-        centerShootFromHuman = createPose( 144 - 64, 85,  - 70  );
-        centerShootFromHumanPlusLeave = createPose( 144 - 63.5, 109, - 70);
-        centerShootFromThird = createPose( 144 - 64, 85, - 90);
-        centerShoot45 = createPose( 144 - 64, 85, - 45);
+        // closeShoot = createPose(144- 38 - 20, 124 - 20, 0);
+        centerShoot = createPose(144 - 56, 144 - 56, 0);
+        centerShootFromHuman = createPose(144 - 56, 144 - 56, -70);
+        centerShootFromHumanPlusLeave = createPose(144 - 63.5, 109, -70);
+        centerShootFromThird = createPose(144 - 58, 144 - 58, -90);
+        centerShoot45 = createPose(144 - 58, 144 - 58, -45);
 
         farShoot = createPose (0,0 , 60 );
         farLeave = createPose(5, 0, 0 );
@@ -51,8 +51,6 @@ public class AutoPoses extends Poses {
         intake2Take = createPose(INTAKE_2_END_X, INTAKE_2_Y, 0);
         intake1Prep = createPose(INTAKE_START_X, INTAKE_1_Y, 0);
         intake1Take = createPose(INTAKE_1_END_X, INTAKE_1_Y, 0);
-
-        //
 
         // gate poses
         gateCorner = createPose(115, 60, 0);
@@ -76,10 +74,5 @@ public class AutoPoses extends Poses {
         finalCollectFromHuman2  = createPose (130, 16, - 85);
 
         gateLeaveTurn = createPose(100 - 9 , 60, 0);
-    }
-
-    public void counterOffsetGate(){
-        gateIntakeTake = new Pose(gateIntakeTake.getX(), gateIntakePrep.getY() - 2.5);
-        gateIntakePrep = new Pose(gateIntakePrep.getX(), gateIntakePrep.getY() - 2.5);
     }
 }

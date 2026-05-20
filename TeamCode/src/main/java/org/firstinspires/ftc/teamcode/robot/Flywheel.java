@@ -29,8 +29,6 @@ public class Flywheel {
 
     private static double farDistance = 115, centerDistance = 104, defaultDistance = 75, closeDistance = 58;
 
-    public static double TURRET_TO_ODOM = -1.0881954;
-
     // DO NOT TOUCH THIS UNLESS NECESSARY
     public static double CORR_OFFSET_ANGLE = 0;
 
@@ -46,7 +44,6 @@ public class Flywheel {
     private long overrideTarget = -1;
 
     public Flywheel(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose targetPose, boolean isAuto) {
-
         constants.d = kd;
         constants.p = kp;
         constants.i = ki;
@@ -58,9 +55,7 @@ public class Flywheel {
         leftMotor = hardwareMap.get(DcMotorEx.class, "flywheel1");
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         hoodServo = hardwareMap.get(Servo.class, "hood");
 
@@ -164,20 +159,11 @@ public class Flywheel {
         double x = follower.getPose().getX();
         double y = follower.getPose().getY();
 
-        double turretAngle = follower.getPose().getHeading() + Math.toRadians(CORR_OFFSET_ANGLE);
-        double px = Math.cos(turretAngle) * TURRET_TO_ODOM;
-        double py = Math.sin(turretAngle) * TURRET_TO_ODOM;
-
-        x += px;
-        y += py;
-
         double dx = x - targetPose.getX();
         double dy = y - targetPose.getY();
 
         return Math.sqrt(dx * dx + dy * dy);
     }
-
-
 
     public void start() {
         running = true;

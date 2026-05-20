@@ -9,12 +9,11 @@ import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 @Autonomous (name = "Muie Labubu BLUE")
 public class TripleGateBlue extends AutoBase{
-
     protected StateMachine<State> fsm = new StateMachine<>(State.INIT);
 
     private double waitForTurret = 2000;
 
-    protected enum  State {
+    protected enum State {
         INIT,
         START_TO_SHOOT, SHOOT_PRELOAD,
         INTAKE_B, INTAKE_TO_SHOOT_B, OPEN_GATE_AFTER_B,  SHOOT_B,

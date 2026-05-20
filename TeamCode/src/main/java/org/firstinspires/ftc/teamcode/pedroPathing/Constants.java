@@ -6,12 +6,9 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
 import com.pedropathing.ftc.drivetrains.MecanumConstants;
-import com.pedropathing.ftc.localization.Encoder;
 import com.pedropathing.ftc.localization.constants.PinpointConstants;
-import com.pedropathing.ftc.localization.constants.ThreeWheelIMUConstants;
 import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -46,41 +43,14 @@ public class Constants {
             .yVelocity(40.1784)
             .useBrakeModeInTeleOp(true);
 
-//    public static ThreeWheelIMUConstants localizerConstants =
-//            new ThreeWheelIMUConstants()
-//                    .forwardTicksToInches(.001976)
-//                    .strafeTicksToInches(-.001986)
-//                    .turnTicksToInches(.002026)
-//                    .rightPodY(60 / (25.4)) // millimeters to inches
-//                    .leftPodY(-60 / (25.4))
-//                    .strafePodX(-4 / (25.4))
-//                    .rightEncoder_HardwareMapName("leftIntake") // set manually
-//                    .leftEncoder_HardwareMapName("leftFront")
-//                    .strafeEncoder_HardwareMapName("rightFront")
-//                    .leftEncoderDirection(Encoder.FORWARD)
-//                    .rightEncoderDirection(Encoder.FORWARD)
-//                    .strafeEncoderDirection(Encoder.FORWARD)
-//                    .IMU_HardwareMapName("imu")
-//                    .IMU_Orientation(
-//                            new RevHubOrientationOnRobot(
-//                                    RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
-//                                    RevHubOrientationOnRobot.UsbFacingDirection.LEFT
-//                            )
-//                    );
-
-    /*
-    19.065773222002645
-    -5.532237135519196
-     */
-
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(-2.36220472) //tune
-            .strafePodX(-6.43704296)
+            .forwardPodY(-2.36) //tune
+            .strafePodX(-7.08)
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName("pinpoint")
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
-            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
+            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
             ;
 
 

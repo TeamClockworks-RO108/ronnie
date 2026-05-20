@@ -8,10 +8,9 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.command.Subsystem;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-public class PedroMovement implements Subsystem {
+public class PedroMovement {
     private static final double FINE_POWER = 0.25;
 
     private final Follower follower;

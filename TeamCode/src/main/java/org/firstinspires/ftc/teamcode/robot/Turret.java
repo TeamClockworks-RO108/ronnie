@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import static org.firstinspires.ftc.teamcode.robot.Flywheel.CORR_OFFSET_ANGLE;
-import static org.firstinspires.ftc.teamcode.robot.Flywheel.TURRET_TO_ODOM;
-
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.control.PIDFController;
@@ -21,7 +18,10 @@ import org.firstinspires.ftc.teamcode.util.Drawing;
 public class Turret {
     private static final double TICKS_PER_180 = 14610;
     private static final double RADIANS_TO_ENCODER_TICKS = TICKS_PER_180 / Math.PI;
-    private static final double AUTO_START_OFFSET = -5;
+    private static final double AUTO_START_OFFSET = -10;
+
+    private static final double TURRET_LOWER_BOUND = -Math.PI / 2;
+    private static final double TURRET_UPPER_BOUND = Math.PI / 2;
 
     private final Telemetry telemetry;
     private final Follower follower;
@@ -40,19 +40,14 @@ public class Turret {
     private long overrideCorrectionOffset = 0;
     private long beforeCorrectionOffset = 0;
 
-    public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(1.2, 0.1, 0.05, 0.3);
+    public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(1.2, 0.3, 0.05, 0.3);
 
     // This moves the turret anticipatively by joystick input. works only in teleop.
     private static PIDFCoefficients predictiveMovementControl = new PIDFCoefficients(0.13, 0, 0.01, 0);
     private final Supplier<Double> wheelRotationPower;
 
-    private double turretLocalAngle;
-    private double turretGlobalAngle;
-    private double angleToGoal;
-    private double robotx;
-    private double roboty;
-
-    public Turret (HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose goalTarget, boolean reset, Supplier<Double> wheelRotationPower) {
+    public Turret(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose goalTarget,
+                  boolean reset, Supplier<Double> wheelRotationPower) {
         encoderMotor = hardwareMap.get(DcMotor.class, "leftFront");
 
         headingServo0 = hardwareMap.get(CRServo.class, "heading0");
@@ -70,22 +65,25 @@ public class Turret {
         pid = new PIDFController(pidfCoefficients);
         pidMovement = new PIDFController(predictiveMovementControl);
 
-        if (reset) {
+        /* (old encoder resetting logic)
             encoderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             encoderMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             // This zeros the turret at each opmode start.
             // AND ALSO ADDS AN OFFSET!!
             overrideCorrectionOffset = - getEncoder() + (long)(RADIANS_TO_ENCODER_TICKS * Math.toRadians(AUTO_START_OFFSET));
+        */
+
+        if (reset) {
+            overrideCorrectionOffset = (long)(RADIANS_TO_ENCODER_TICKS * Math.toRadians(AUTO_START_OFFSET));
         } else {
             overrideCorrectionOffset = 0;
         }
-
     }
 
     public void update() {
-        updateAngles();
+        double angleError = computeAngleMotion();
 
-        pid.updateError(turretGlobalAngle - turretLocalAngle);
+        pid.updateError(angleError);
         double power = pid.run();
 
         power = exponentialPowerAlgo(Math.abs(power)) * Math.signum(power);
@@ -97,11 +95,7 @@ public class Turret {
             setTurretPower(power);
         }
 
-        Drawing.drawRobot(new Pose(robotx, roboty), Drawing.turretLook);
-
         telemetry.addData("Turret Power", power);
-        telemetry.addData("Angle Robot to Goal", Math.toDegrees(angleToGoal));
-        telemetry.addData("Angle Turret to Goal", Math.toDegrees(turretGlobalAngle));
         telemetry.addData("Turret Encoder", getEncoder());
         telemetry.addData("Turret Override", isOverride);
 
@@ -110,27 +104,63 @@ public class Turret {
         // }
     }
 
-    private void updateAngles() {
-        // local turret angle
-        turretLocalAngle = (getEncoder() / TICKS_PER_180) * Math.PI;
+    private double computeAngleMotion() {
+        double turretLocalAngle = (getEncoder() / TICKS_PER_180) * Math.PI;
+        turretLocalAngle = AngleUnit.normalizeRadians(turretLocalAngle);
 
-        // update robot position
-        double turretAngle = follower.getPose().getHeading() + Math.toRadians(CORR_OFFSET_ANGLE);
-        double px = Math.cos(turretAngle) * TURRET_TO_ODOM;
-        double py = Math.sin(turretAngle) * TURRET_TO_ODOM;
+        double robotx = follower.getPose().getX();
+        double roboty = follower.getPose().getY();
 
-        robotx = follower.getPose().getX() + px;
-        roboty = follower.getPose().getY() + py;
+        double robotGlobalAngle = follower.getPose().getHeading();
+        double turretGlobalAngle = AngleUnit.normalizeRadians(robotGlobalAngle + turretLocalAngle);
 
-        // global turret
-        angleToGoal = -AngleUnit.normalizeRadians(Math.PI - Math.atan2(goalTargetY - roboty, goalTargetX - robotx));
-        double robotHeading =  AngleUnit.normalizeRadians(follower.getPose().getHeading() - Math.PI);
+        // field goal location
+        double goalGlobalAngle = Math.atan2(goalTargetY - roboty, goalTargetX - robotx);
+        double goalLocalAngle = AngleUnit.normalizeRadians(goalGlobalAngle - robotGlobalAngle);
 
-        double angleTurret = AngleUnit.normalizeRadians(angleToGoal - robotHeading);
+        double errorAngle = computeTurretError(goalLocalAngle, turretLocalAngle);
 
-        angleTurret = Math.max(angleTurret, -Math.PI );
-        angleTurret = Math.min(angleTurret,  Math.PI/2);
-        turretGlobalAngle = angleTurret;
+        // telemetry
+        Drawing.drawRobot(new Pose(robotx, roboty), Drawing.turretLook);
+
+        telemetry.addData("turretGlobalAngle", Math.toDegrees(turretGlobalAngle));
+        telemetry.addData("turretLocalAngle", Math.toDegrees(turretLocalAngle));
+        telemetry.addData("goalGlobalAngle", Math.toDegrees(goalGlobalAngle));
+        telemetry.addData("goalLocalAngle", Math.toDegrees(goalLocalAngle));
+        telemetry.addData("errorAngle", errorAngle);
+
+        return errorAngle;
+    }
+
+    private static double computeTurretError(double target, double current) {
+        target = AngleUnit.normalizeRadians(target);
+        current = AngleUnit.normalizeRadians(current);
+
+        // clamp target into legal region
+        target = clamp(target);
+
+        double error = target - current;
+
+        // initial shortest path
+        double nextAngle = current + error;
+
+        // adjust illegals
+        if (!isWithinBoundaries(nextAngle)) {
+            if (error > 0.0)
+                error -= (2 * Math.PI);
+            else
+                error += (2 * Math.PI);
+        }
+
+        return error;
+    }
+
+    private static double clamp(double angle) {
+        return Math.max(TURRET_LOWER_BOUND, Math.min(angle, TURRET_UPPER_BOUND));
+    }
+
+    private static boolean isWithinBoundaries(double angle) {
+        return angle >= TURRET_LOWER_BOUND && angle <= TURRET_UPPER_BOUND;
     }
 
     private long getEncoder() {
@@ -142,7 +172,7 @@ public class Turret {
         return ((Math.log10(interior) / Math.log10(2.71)) / 1.56) * 0.3 + power * 0.7;
     }
 
-    private void setTurretPower(double power){
+    private void setTurretPower(double power) {
         headingServo0.setPower(power);
         headingServo1.setPower(power);
     }
@@ -160,6 +190,5 @@ public class Turret {
             isOverride = true;
             setTurretPower(power);
         }
-
     }
 }
