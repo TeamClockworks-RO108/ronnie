@@ -17,15 +17,9 @@ public class TripleGateBlue extends AutoBase{
         INIT,
         START_TO_SHOOT, SHOOT_PRELOAD,
         INTAKE_B, INTAKE_TO_SHOOT_B, OPEN_GATE_AFTER_B,  SHOOT_B,
-//        GATE_INTAKE_A, GATE_INTAKE_TO_SHOOT_A, GATE_INTAKE_TO_SHOOT_A_GO, GATE_SHOOT_A,
-//        GATE_INTAKE_B, GATE_INTAKE_TO_SHOOT_B, GATE_INTAKE_TO_SHOOT_B_GO,GATE_SHOOT_B,
-//        GATE_INTAKE_C, GATE_INTAKE_TO_SHOOT_C,GATE_INTAKE_TO_SHOOT_C_GO, GATE_SHOOT_C,
         INTAKE_A, INTAKE_TO_SHOOT_A, SHOOT_A,
-
         GO_COLLECT_FROM_HUMAN_1, RETURN_TO_LAUNCH_1, LAUNCH_1,
         GO_COLLECT_FROM_HUMAN_2, RETURN_TO_LAUNCH_2, LAUNCH_2,
-
-
         INTAKE_C, INTAKE_TO_SHOOT_C, SHOOT_C,
         GO_HOME,
         DEAD
@@ -41,17 +35,15 @@ public class TripleGateBlue extends AutoBase{
     @Override
     protected void setStartingPose() {
         startingPose = poses.goalStart;
-
     }
 
     @Override
     protected void setupFSM() {
-
         // preload cycle
         fsm.onStateEnter(State.START_TO_SHOOT, () -> {
             movement.followPath(paths.GoalStartToShoot);
             intake.command(Intake.Command.TOGGLE_INTAKE);
-            intake.overrideTarget(1150);
+            intake.overrideTarget(1080);
         });
         fsm.onStateUpdate(State.START_TO_SHOOT, (current, timeSinceTransition) ->
                 !movement.isBusy() && timeSinceTransition > 400? State.SHOOT_PRELOAD : null);
@@ -60,24 +52,9 @@ public class TripleGateBlue extends AutoBase{
             return timeSinceTransition > intake.getShootTime() ? State.INTAKE_A : null;
         });
 
-        // cycle B
-        fsm.onStateEnter(State.INTAKE_B, () -> { movement.followPath(paths.goalToIntake2);
-            intake.overrideTarget(1265);
-        });
-        fsm.onStateUpdate(State.INTAKE_B, (current, timeSinceTransition) -> !movement.isBusy()? State.OPEN_GATE_AFTER_B : null);
-        fsm.onStateEnter(State.OPEN_GATE_AFTER_B, () -> movement.followPath(paths.turnToOpenGate));
-        fsm.onStateUpdate(State.OPEN_GATE_AFTER_B, (current, timeSinceTransition) -> !movement.isBusy()? State.INTAKE_TO_SHOOT_B : null);
-        fsm.onStateEnter(State.INTAKE_TO_SHOOT_B, () -> movement.followPath(paths.intake2ToShoot));
-        fsm.onStateUpdate(State.INTAKE_TO_SHOOT_B, (current, timeSinceTransition) -> !movement.isBusy() && timeSinceTransition > waitForTurret ?  State.SHOOT_B : null);
-        fsm.onStateEnter(State.SHOOT_B, () -> intake.command(Intake.Command.LAUNCH));
-        fsm.onStateUpdate(State.SHOOT_B, (current, timeSinceTransition) -> {
-            return timeSinceTransition > intake.getShootTime() ? State.INTAKE_C: null;
-        });
-        //TUNED FOR DOUBLE GATE !!1!!!!!
-
-        //cycle A
+        // cycle A
         fsm.onStateEnter(State.INTAKE_A, () -> { movement.followPath(paths.goalToIntake3);
-            intake.overrideTarget(1260);} );
+            intake.overrideTarget(1200);} );
         fsm.onStateUpdate(State.INTAKE_A, () -> !movement.isBusy() ? State.INTAKE_TO_SHOOT_A : null);
         fsm.onStateEnter(State.INTAKE_TO_SHOOT_A, () -> movement.followPath(paths.intake3ToShoot));
         fsm.onStateUpdate(State.INTAKE_TO_SHOOT_A, (current, timeSinceTransition )  -> !movement.isBusy() && timeSinceTransition > waitForTurret? State.SHOOT_A  : null);
@@ -86,7 +63,20 @@ public class TripleGateBlue extends AutoBase{
             return timeSinceTransition > intake.getShootTime() ? State.INTAKE_B : null;
         });
 
-        //cycle C
+        // cycle B
+        fsm.onStateEnter(State.INTAKE_B, () -> {
+            movement.followPath(paths.goalToIntake2);
+            intake.overrideTarget(1160);
+        });
+        fsm.onStateUpdate(State.INTAKE_B, (current, timeSinceTransition) -> !movement.isBusy()? State.OPEN_GATE_AFTER_B : null);
+        fsm.onStateEnter(State.OPEN_GATE_AFTER_B, () -> movement.followPath(paths.turnToOpenGate));
+        fsm.onStateUpdate(State.OPEN_GATE_AFTER_B, (current, timeSinceTransition) -> !movement.isBusy()? State.INTAKE_TO_SHOOT_B : null);
+        fsm.onStateEnter(State.INTAKE_TO_SHOOT_B, () -> movement.followPath(paths.intake2ToShoot));
+        fsm.onStateUpdate(State.INTAKE_TO_SHOOT_B, (current, timeSinceTransition) -> !movement.isBusy() && timeSinceTransition > waitForTurret ?  State.SHOOT_B : null);
+        fsm.onStateEnter(State.SHOOT_B, () -> intake.command(Intake.Command.LAUNCH));
+        fsm.onStateUpdate(State.SHOOT_B, (current, timeSinceTransition) -> timeSinceTransition > intake.getShootTime() ? State.INTAKE_C: null);
+
+        // cycle C
         fsm.onStateEnter(State.INTAKE_C, () -> movement.followPath(paths.goTo3rdSpike));
         fsm.onStateUpdate(State.INTAKE_C, () -> !movement.isBusy() ? State.INTAKE_TO_SHOOT_C : null);
         fsm.onStateEnter(State.INTAKE_TO_SHOOT_C, () -> { movement.followPath(paths.intake1ToShoot);
@@ -106,10 +96,10 @@ public class TripleGateBlue extends AutoBase{
         fsm.onStateEnter(State.LAUNCH_1,   () -> { intake.command(Intake.Command.LAUNCH);});
         fsm.onStateUpdate(State.LAUNCH_1, (current, timeSinceTransition) -> { return  timeSinceTransition > intake.getShootTime() ? State.GO_COLLECT_FROM_HUMAN_2: null; } );
 
-        //collectFromHuman2
+        // collectFromHuman2
         fsm.onStateEnter(State.GO_COLLECT_FROM_HUMAN_2, () -> {
             movement.followPath(paths.goCollectFromHumanEvo2);
-            intake.overrideTarget(1190);});
+            intake.overrideTarget(1180);});
         fsm.onStateUpdate(State.GO_COLLECT_FROM_HUMAN_2, (current, timeSinceTransition) -> !movement.isBusy() ? State.RETURN_TO_LAUNCH_2: null);
         fsm.onStateEnter(State.RETURN_TO_LAUNCH_2,() -> {
             movement.followPath(paths.returnFromHuman2);
@@ -118,12 +108,7 @@ public class TripleGateBlue extends AutoBase{
         fsm.onStateEnter(State.LAUNCH_2,   () -> { intake.command(Intake.Command.LAUNCH);});
         fsm.onStateUpdate(State.LAUNCH_2, (current, timeSinceTransition) -> { return  timeSinceTransition > intake.getShootTime() ? State.DEAD: null; } );
 
-        
-//        fsm.onStateEnter(State.GO_HOME, () -> movement.followPath(paths.GoalShootToHome));
-//        fsm.onStateUpdate(State.GO_HOME, () -> !movement.isBusy() ? State.DEAD : null);
-
         fsm.onStateEnter(State.DEAD, () -> intake.command(Intake.Command.TOGGLE_INTAKE));
-
 
         fsm.init();
     }

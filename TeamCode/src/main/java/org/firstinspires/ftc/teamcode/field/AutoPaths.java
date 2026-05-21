@@ -50,17 +50,9 @@ public class AutoPaths {
         goTo3rdSpike = createTangentPath(poses.centerShoot, poses.intake1Prep, poses.intake1Take);
         goTo2ndSpike = createTangentPath(poses.centerShoot, poses.intake2Prep, poses.intake2Take);
 
-//        //gate to shoot and vv paths
-//        shootTogate = createIntakePath(poses.centerShoot, poses.gateIntakePrep , poses.gateIntakeTake);
-//        gateToShoot = follower.pathBuilder()
-//                .addPath(new BezierCurve(poses.gateIntakeTake, poses.gateLeaveTurn, poses.centerShoot))
-//                .setLinearHeadingInterpolation(poses.gateIntakeTake.getHeading(), poses.centerShoot.getHeading(), 0.8)
-//                .build();
-
         shootTogate = createIntakePath(poses.centerShoot, poses.gateIntakePrep, poses.gateIntakeTake);
         turnBeforeShoot = createPath(poses.gateIntakeTake, poses.gateTurnBeforeShoot);
         gateToShoot = createPath(poses.gateIntakeTake, new Pose(85, 72, 0), poses.centerShoot);
-
 
         leaveFar = createPath(poses.farShoot, poses.farLeave);
 
@@ -77,13 +69,10 @@ public class AutoPaths {
                 .setConstantHeadingInterpolation(poses.prepareToCollectFromHuman.getHeading())
                 .build();
 
-
         returnFromHuman2 = follower.pathBuilder()
                 .addPath(new BezierLine( poses.goCollectFromHuman, poses.centerShootFromHumanPlusLeave))
                 .setConstantHeadingInterpolation(poses.centerShootFromHumanPlusLeave.getHeading())
                 .build();
-
-
     }
     private PathChain createPath(Pose first, Pose second) {
         return follower.pathBuilder()

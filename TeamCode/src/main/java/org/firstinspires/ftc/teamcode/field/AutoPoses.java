@@ -5,10 +5,10 @@ import com.pedropathing.geometry.Pose;
 public class AutoPoses extends Poses {
     // intake positions
     protected static final double
-            INTAKE_START_X = 98-9,
-            INTAKE_3_END_X = 144- 29 , INTAKE_3_Y = 85,
-            INTAKE_2_END_X = 144 - 22 , INTAKE_2_Y = 60 ,
-            INTAKE_1_END_X = 144-10.5 - 9 , INTAKE_1_Y = INTAKE_2_Y - 22;
+            INTAKE_START_X = 88,
+            INTAKE_3_END_X = 144 - 27, INTAKE_3_Y = 84,
+            INTAKE_2_END_X = 144 - 23, INTAKE_2_Y = 58,
+            INTAKE_1_END_X = 144 - 17, INTAKE_1_Y = 36;
 
     public Pose
             goalStart, goalHome,
@@ -29,20 +29,18 @@ public class AutoPoses extends Poses {
         super(color);
 
         // start specific poses
-        goalStart = createPose(144 - 24, 144 - 24, 0);
+        goalStart = createPose(144 - 26, 144 - 26, 0);
         goalHome = createPose(116, 90, 0);
 
         // shooting poses
-        // closeShoot = createPose(144- 38 - 20, 124 - 20, 0);
         centerShoot = createPose(144 - 56, 144 - 56, 0);
         centerShootFromHuman = createPose(144 - 56, 144 - 56, -70);
-        centerShootFromHumanPlusLeave = createPose(144 - 63.5, 109, -70);
+        centerShootFromHumanPlusLeave = createPose(85, 109, -70);
         centerShootFromThird = createPose(144 - 58, 144 - 58, -90);
         centerShoot45 = createPose(144 - 58, 144 - 58, -45);
 
-        farShoot = createPose (0,0 , 60 );
-        farLeave = createPose(5, 0, 0 );
-
+        farShoot = createPose (0,0, 60);
+        farLeave = createPose(5, 0, 0);
 
         // intake poses
         intake3Prep = createPose(INTAKE_START_X, INTAKE_3_Y, 0);
@@ -55,23 +53,22 @@ public class AutoPoses extends Poses {
         // gate poses
         gateCorner = createPose(115, 60, 0);
 
-        gateIntakeTake = createPose ( 132 - 9 , 61.5, 36.5);
-        gateIntakePrep = createPose( 114 - 9 , 61.5, 36.5);
+        gateIntakeTake = createPose (132 - 9, 61.5, 36.5);
+        gateIntakePrep = createPose(114 - 9, 61.5, 36.5);
 
-        turnToOpenGate = createPose ( 144 - 26.5, 66 , -45);
-        turnToOpenGate0 = createPose ( 144 - 23.4 , 68.5, -90);
-        // turnToOpenGate0= createPose ( 130 - 27,  75,   -90 );
+        turnToOpenGate = createPose (124, 65, -45);
+        turnToOpenGate0 = createPose (124.5, 68, -90);
 
-        gateTurnBeforeShoot = createPose(130 - 9 , 63.5, 0 );
+        gateTurnBeforeShoot = createPose(130 - 9 , 63.5, 0);
 
-        prepareToCollectFromHuman = createPose(144 - 64 , 85 , - 70 );
-        goCollectFromHuman = createPose ( 120 , 22,  -80);
+        prepareToCollectFromHuman = createPose(144 - 64, 85, -70);
+        goCollectFromHuman = createPose ( 120, 22, -80);
 
-        intCollectFromHuman  = createPose (122, 45 , - 70);
-        finalCollectFromHuman  = createPose (129, 18.5 , - 85);
+        intCollectFromHuman  = createPose (122, 45 ,-70);
+        finalCollectFromHuman  = createPose (129, 18.5, - 85);
 
-        intCollectFromHuman2  = createPose (125, 45 , - 70);
-        finalCollectFromHuman2  = createPose (130, 16, - 85);
+        intCollectFromHuman2  = createPose (125, 45, - 70);
+        finalCollectFromHuman2  = createPose (130, 10, - 85);
 
         gateLeaveTurn = createPose(100 - 9 , 60, 0);
     }

@@ -13,21 +13,19 @@ import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 @Configurable
 public class Intake {
-    private static final double BARRIER_ON = 0.475, BARRIER_OFF = 0.7;
+    private static final double BARRIER_ON = 0.425, BARRIER_OFF = 0.7;
 
     private static final double BARRIER_VIBRATE_AMPLITUDE = 0.004;
     private static final double BARRIER_VIBRATE_TIME = 400;
 
     private double lastVibrate;
 
-    private boolean isHoodRaised = false;
-    private int TIME_TO_SHOOT = 400, TIME_TO_START_FLYWHEEL = 1500, TIME_TO_REJECT = 100;
+    private int TIME_TO_SHOOT = 400, TIME_TO_START_FLYWHEEL = 1500, TIME_TO_REJECT = 200;
 
     private final DcMotor rightIntake;
     private final DcMotor leftIntake;
     private final Servo barrier;
     private final Flywheel flywheel;
-
 
     private enum State {
         IDLE,
@@ -37,7 +35,7 @@ public class Intake {
         REJECTING,
     }
 
-    public enum Command{
+    public enum Command {
         TOGGLE_INTAKE,
         LAUNCH,
         REJECT,
@@ -64,8 +62,8 @@ public class Intake {
 
 
     private void start() {
-        leftIntake.setPower(1);
-        rightIntake.setPower(1);
+        leftIntake.setPower(0.8);
+        rightIntake.setPower(0.8);
     }
     private void stop() {
         leftIntake.setPower(0);
@@ -140,11 +138,9 @@ public class Intake {
         });
 
         fsm.onStateEnter(State.REJECTING, () -> reject());
-        fsm.onStateUpdate(State.REJECTING, (current, timeSinceTransition) -> timeSinceTransition > 200 ? State.INTAKE : null);
+        fsm.onStateUpdate(State.REJECTING, (current, timeSinceTransition) -> timeSinceTransition > TIME_TO_REJECT ? State.INTAKE : null);
 
         fsm.init();
-
-
     }
 
     public void update(){
@@ -153,10 +149,10 @@ public class Intake {
 
         double time = System.currentTimeMillis();
 
-        double barpos = barrier.getPosition();
-        if (Math.abs(barpos - BARRIER_OFF) < (BARRIER_VIBRATE_AMPLITUDE + 0.001) && time - lastVibrate > BARRIER_VIBRATE_TIME) {
+        double barPos = barrier.getPosition();
+        if (Math.abs(barPos - BARRIER_OFF) < (BARRIER_VIBRATE_AMPLITUDE + 0.001) && time - lastVibrate > BARRIER_VIBRATE_TIME) {
             lastVibrate = time;
-            if (barpos < BARRIER_OFF)
+            if (barPos < BARRIER_OFF)
                 barrier.setPosition(BARRIER_OFF + BARRIER_VIBRATE_AMPLITUDE);
             else
                 barrier.setPosition(BARRIER_OFF - BARRIER_VIBRATE_AMPLITUDE);
