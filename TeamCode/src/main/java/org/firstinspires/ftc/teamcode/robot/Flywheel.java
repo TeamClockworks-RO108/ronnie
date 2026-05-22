@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.control.PIDFController;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.pedropathing.control.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -24,17 +25,17 @@ public class Flywheel {
 
     private final Pose targetPose;
 
-    private static double farHood = 0.72, centerHood = 0.59, defaultHood = 0.54, closeHood = 0.28;
-    private static double farSpeed = 1200, centerSpeed = 1300, defaultSpeed = 1175, closeSpeed = 1125;
+    private static double farHood = 0.72, centerHood = 0.59, defaultHood = 0.52, closeHood = 0.22;
+    private static double farSpeed = 1200, centerSpeed = 1300, defaultSpeed = 1160, closeSpeed = 1100;
 
-    private static double farDistance = 115, centerDistance = 104, defaultDistance = 75, closeDistance = 58;
+    private static double farDistance = 115, centerDistance = 100, defaultDistance = 65, closeDistance = 50;
 
     // DO NOT TOUCH THIS UNLESS NECESSARY
     public static double CORR_OFFSET_ANGLE = 0;
 
-    public static final PIDFCoefficients constants = new PIDFCoefficients();
+    public static PIDFCoefficients constants = new PIDFCoefficients(.008, .000003, .00005, .003);
 
-    public static double kp = 250, ki = 3, kd = 14, kf = 0;
+    private final PIDFController controller;
 
     public static double aimingTarget;
     public static double idleSpeed = 300;
@@ -44,16 +45,14 @@ public class Flywheel {
     private long overrideTarget = -1;
 
     public Flywheel(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose targetPose, boolean isAuto) {
-        constants.d = kd;
-        constants.p = kp;
-        constants.i = ki;
-        constants.f = kf;
+        this.controller = new PIDFController(constants);
+
 
         rightMotor = hardwareMap.get(DcMotorEx.class, "flywheel");
-        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         leftMotor = hardwareMap.get(DcMotorEx.class, "flywheel1");
-        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -127,8 +126,7 @@ public class Flywheel {
         }
 
         if (changed && !isAuto) {
-            rightMotor.setVelocity(aimingTarget);
-            leftMotor.setVelocity(aimingTarget);
+            controller.setTargetPosition(aimingTarget);
         }
         telemetry.addData("Flywheel Target TPS", -aimingTarget);
 
@@ -138,21 +136,22 @@ public class Flywheel {
             hoodServo.setPosition(0.55);
         }
 
-        changed = constants.d != kd ||
-                constants.p != kp ||
-                constants.i != ki ||
-                constants.f != kf;
 
-        if (changed) {
-            constants.d = kd;
-            constants.p = kp;
-            constants.i = ki;
-            constants.f = kf;
-            rightMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
-                    constants);
-            leftMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,
-                    constants);
-        }
+        double left = leftMotor.getVelocity();
+        double right = rightMotor.getVelocity();
+
+        if (Math.abs(left - right) > 65) {
+            telemetry.addData("Flywheel fault tolerance", Math.abs(left-right));
+            double max = (
+                    Math.abs(left) > Math.abs(right) ?
+                            left : right
+                    );
+            controller.updatePosition(max);
+        } else controller.updatePosition(left);
+        double power = controller.run();
+        telemetry.addData("Flywheel power", power);
+        leftMotor.setPower(power);
+        rightMotor.setPower(power);
     }
 
     public double distanceToGoal() {
