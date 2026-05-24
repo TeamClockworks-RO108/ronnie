@@ -130,7 +130,7 @@ public class Flywheel {
         }
         telemetry.addData("Flywheel Target TPS", -aimingTarget);
 
-        if (isAuto) {
+        if ( changed && isAuto && overrideTarget != -1) {
             rightMotor.setVelocity(overrideTarget);
             leftMotor.setVelocity(overrideTarget);
             hoodServo.setPosition(0.55);
@@ -148,10 +148,12 @@ public class Flywheel {
                     );
             controller.updatePosition(max);
         } else controller.updatePosition(left);
-        double power = controller.run();
-        telemetry.addData("Flywheel power", power);
-        leftMotor.setPower(power);
-        rightMotor.setPower(power);
+        if( !isAuto) {
+            double power = controller.run();
+            telemetry.addData("Flywheel power", power);
+            leftMotor.setPower(power);
+            rightMotor.setPower(power);
+        }
     }
 
     public double distanceToGoal() {

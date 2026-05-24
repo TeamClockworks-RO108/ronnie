@@ -17,16 +17,15 @@ import org.firstinspires.ftc.teamcode.util.Drawing;
 @Configurable
 public class Turret {
     private static final double TICKS_PER_180 = 14610;
-    private static final double RADIANS_TO_ENCODER_TICKS = TICKS_PER_180 / Math.PI;
-    private static final double AUTO_START_OFFSET = -7;
-
+//    private static final double RADIANS_TO_ENCODER_TICKS = TICKS_PER_180 / Math.PI;
+//    private static final double AUTO_START_OFFSET = -7;
     private static final double TURRET_LOWER_BOUND = -Math.PI * 3 / 4;
     private static final double TURRET_UPPER_BOUND = Math.PI / 2;
 
     private final Telemetry telemetry;
     private final Follower follower;
-    public static double goalTargetX;
-    public static double goalTargetY;
+    public static double goalTargetX = 138;
+    public static double goalTargetY = 148;
 
     private final PIDFController pid;
 
@@ -36,6 +35,8 @@ public class Turret {
     private final CRServo headingServo0, headingServo1;
 
     private boolean isOverride = false;
+
+    private boolean isAuto;
 
     private long overrideCorrectionOffset = 0;
     private long beforeCorrectionOffset = 0;
@@ -47,7 +48,7 @@ public class Turret {
     private final Supplier<Double> wheelRotationPower;
 
     public Turret(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose goalTarget,
-                  boolean reset, Supplier<Double> wheelRotationPower) {
+                  boolean reset, Supplier<Double> wheelRotationPower, boolean isAuto) {
         encoderMotor = hardwareMap.get(DcMotor.class, "leftFront");
 
         headingServo0 = hardwareMap.get(CRServo.class, "heading0");
@@ -61,6 +62,7 @@ public class Turret {
         goalTargetX = goalTarget.getX();
         goalTargetY = goalTarget.getY();
         this.wheelRotationPower = wheelRotationPower;
+        this.isAuto = isAuto;
 
         pid = new PIDFController(pidfCoefficients);
         pidMovement = new PIDFController(predictiveMovementControl);
@@ -74,7 +76,10 @@ public class Turret {
         */
 
         if (reset) {
-            overrideCorrectionOffset = (long)(RADIANS_TO_ENCODER_TICKS * Math.toRadians(AUTO_START_OFFSET));
+            encoderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            encoderMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            // This zeros the turret at each opmode start.
+            overrideCorrectionOffset = - getEncoder();
         } else {
             overrideCorrectionOffset = 0;
         }
@@ -110,8 +115,10 @@ public class Turret {
 
         double robotx = follower.getPose().getX();
         double roboty = follower.getPose().getY();
+        
 
-        double robotGlobalAngle = follower.getPose().getHeading();
+         double robotGlobalAngle = follower.getPose().getHeading();
+
         double turretGlobalAngle = AngleUnit.normalizeRadians(robotGlobalAngle + turretLocalAngle);
 
         // field goal location
@@ -190,5 +197,11 @@ public class Turret {
             isOverride = true;
             setTurretPower(power);
         }
+    }
+
+    private static Pose overridePose = new Pose (0,0,0);
+
+    public void override(Pose pose){
+        //overridePose = pose;
     }
 }

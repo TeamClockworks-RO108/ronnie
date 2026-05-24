@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.bylazar.telemetry.PanelsTelemetry;
+import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.field.TeamColor;
 import org.firstinspires.ftc.teamcode.robot.Intake;
 import org.firstinspires.ftc.teamcode.robot.PedroMovement;
 import org.firstinspires.ftc.teamcode.robot.Turret;
+import org.firstinspires.ftc.teamcode.util.Drawing;
 
 public abstract class AutoBase extends OpMode {
     protected TeamColor color;
@@ -37,8 +39,9 @@ public abstract class AutoBase extends OpMode {
         paths = new AutoPaths(movement.getFollower(), poses);
 
         intake = new Intake(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget, true);
-        turret = new Turret(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget, true, () -> 0.0);
-       // intake.overrideTarget(1240);
+        turret = new Turret(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget, true, () -> 0.0, true);
+        intake.overrideTarget(1240);
+
 
         setupFSM();
     }
@@ -58,6 +61,8 @@ public abstract class AutoBase extends OpMode {
         turret.update();
 
         telemetry.update();
+
+        drawRobotDashboard(movement.getFollower());
     }
 
     protected abstract void setColor();
@@ -65,4 +70,17 @@ public abstract class AutoBase extends OpMode {
     protected abstract void setupFSM();
     protected abstract void startFSM();
     protected abstract void updateFSM();
+
+    public static void drawRobotDashboard(Follower follower) {
+        try {
+            Drawing.drawRobot(follower.getPose());
+            Drawing.drawRobot(new Pose(Turret.goalTargetX, Turret.goalTargetY), Drawing.targetLook);
+
+            Drawing.sendPacket();
+
+
+        } catch (Exception e) {
+            throw new RuntimeException("Drawing failed " + e);
+        }
+    }
 }
