@@ -15,11 +15,12 @@ public class AutoPaths {
     public PathChain goalToIntake3, goalToIntake2, goalToIntake1;
     public PathChain intake3ToShoot, intake2ToShoot, intake1ToShoot;
 
-    public PathChain shootTogate, gateToShoot, turnBeforeShoot;
-
     public PathChain goPrepareCollectFromHuman, goPrepareCollectFromHuman2,  returnFromHuman, returnFromHuman2, goTo3rdSpike, goTo2ndSpike, goCollectFromHumanEvo, goCollectFromHumanEvo2;
 
     public PathChain turnToOpenGate;
+
+    // for gate passes
+    public PathChain shootTogate, gateToShoot, gateToLeave;
 
     public PathChain leaveFar;
 
@@ -50,9 +51,10 @@ public class AutoPaths {
         goTo3rdSpike = createTangentPath(poses.centerShoot, poses.intake1Prep, poses.intake1Take);
         goTo2ndSpike = createTangentPath(poses.centerShoot, poses.intake2Prep, poses.intake2Take);
 
-        shootTogate = createIntakePath(poses.centerShoot, poses.gateIntakePrep, poses.gateIntakeTake);
-        turnBeforeShoot = createPath(poses.gateIntakeTake, poses.gateTurnBeforeShoot);
-        gateToShoot = createPath(poses.gateIntakeTake, new Pose(85, 72, 0), poses.centerShoot);
+        // gate intake paths
+        shootTogate = createIntakePath(poses.gateShoot, poses.gateIntakePrep, poses.gateIntakeTake);
+        gateToShoot = createCurvedPath(poses.gateIntakeTake, poses.gateToShootIntermediary, poses.gateShoot);
+        gateToLeave = createCurvedPath(poses.gateIntakeTake, poses.gateToShootIntermediary, poses.leaveShoot);
 
         leaveFar = createPath(poses.farShoot, poses.farLeave);
 
@@ -121,6 +123,13 @@ public class AutoPaths {
                 .setLinearHeadingInterpolation(first.getHeading(), second.getHeading())
                 .addPath(new BezierLine(second, third))
                 .setLinearHeadingInterpolation(second.getHeading(), third.getHeading())
+                .build();
+    }
+
+    private PathChain createCurvedPath(Pose first, Pose second, Pose third) {
+        return follower.pathBuilder()
+                .addPath(new BezierCurve(first, second, third))
+                .setLinearHeadingInterpolation(first.getHeading(), third.getHeading())
                 .build();
     }
 

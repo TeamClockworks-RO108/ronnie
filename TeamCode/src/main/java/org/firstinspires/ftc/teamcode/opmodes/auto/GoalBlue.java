@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.field.TeamColor;
 import org.firstinspires.ftc.teamcode.robot.Intake;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
+@Disabled
 @Autonomous(name = "Goal BLUE")
 public class GoalBlue extends AutoBase {
     protected final StateMachine<State> fsm = new StateMachine<State>(State.START_TO_SHOOT);

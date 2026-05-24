@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.field.TeamColor;
 
-@Disabled
-@Autonomous(name = "Goal RED")
-public class GoalRed extends GoalBlue {
+@Autonomous(name = "Muie Labubu RED")
+public class HumanPassRed extends HumanPassBlue {
     @Override
     protected void setColor() {
         color = TeamColor.RED;

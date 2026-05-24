@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.robot.Intake;
 import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 @Autonomous (name = "Muie Labubu BLUE")
-public class TripleGateBlue extends AutoBase{
+public class HumanPassBlue extends AutoBase{
     protected StateMachine<State> fsm = new StateMachine<>(State.INIT);
 
     private double waitForTurret = 2000;
@@ -103,7 +103,8 @@ public class TripleGateBlue extends AutoBase{
         // collectFromHuman2
         fsm.onStateEnter(State.GO_COLLECT_FROM_HUMAN_2, () -> {
             movement.followPath(paths.goCollectFromHumanEvo2);
-            intake.overrideTarget(1180);});
+            intake.overrideTarget(1180);
+        });
         fsm.onStateUpdate(State.GO_COLLECT_FROM_HUMAN_2, (current, timeSinceTransition) -> !movement.isBusy() ? State.RETURN_TO_LAUNCH_2: null);
         fsm.onStateEnter(State.RETURN_TO_LAUNCH_2,() -> {
             movement.followPath(paths.returnFromHuman2);
@@ -127,19 +128,5 @@ public class TripleGateBlue extends AutoBase{
     protected void updateFSM() {
 
         fsm.update();
-    }
-
-    private void setupGateCycle(State INTAKE, State INTAKE_TO_SHOOT, State SHOOT, State NEXT_STATE) {
-        fsm.onStateEnter(INTAKE, () -> movement.followPath(paths.shootTogate));
-        fsm.onStateUpdate(INTAKE, (current, timeSinceTransition) -> !movement.isBusy()  && timeSinceTransition > 1800 ? INTAKE_TO_SHOOT : null);
-        fsm.onStateEnter(INTAKE_TO_SHOOT, () -> {
-            movement.followPath(paths.gateToShoot);
-            intake.command(Intake.Command.REJECT);
-        });
-        fsm.onStateUpdate(INTAKE_TO_SHOOT, (current, timeSinceTransition) -> !movement.isBusy() || timeSinceTransition > 0 ? SHOOT : null);
-        fsm.onStateEnter(SHOOT, () -> intake.command(Intake.Command.LAUNCH));
-        fsm.onStateUpdate(SHOOT, (current, timeSinceTransition) -> {
-            return timeSinceTransition > intake.getShootTime() ? NEXT_STATE : null;
-        });
     }
 }
