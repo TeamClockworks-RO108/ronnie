@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.util.Drawing;
 @Configurable
 public class Turret {
     private static final double TICKS_PER_180 = 14610;
-//    private static final double RADIANS_TO_ENCODER_TICKS = TICKS_PER_180 / Math.PI;
+    private static final double RADIANS_TO_ENCODER_TICKS = TICKS_PER_180 / Math.PI;
 //    private static final double AUTO_START_OFFSET = -7;
     private static final double TURRET_LOWER_BOUND = -Math.PI * 3 / 4;
     private static final double TURRET_UPPER_BOUND = Math.PI / 2;
@@ -36,9 +36,7 @@ public class Turret {
 
     private boolean isOverride = false;
 
-    private boolean isAuto;
-
-    private long overrideCorrectionOffset = 0;
+    private long correctionOffset = 0;
     private long beforeCorrectionOffset = 0;
 
     public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(1.2, 0.3, 0.05, 0.3);
@@ -48,7 +46,7 @@ public class Turret {
     private final Supplier<Double> wheelRotationPower;
 
     public Turret(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose goalTarget,
-                  boolean reset, Supplier<Double> wheelRotationPower, boolean isAuto) {
+                  Supplier<Double> wheelRotationPower, boolean reset) {
         encoderMotor = hardwareMap.get(DcMotor.class, "leftFront");
 
         headingServo0 = hardwareMap.get(CRServo.class, "heading0");
@@ -62,26 +60,26 @@ public class Turret {
         goalTargetX = goalTarget.getX();
         goalTargetY = goalTarget.getY();
         this.wheelRotationPower = wheelRotationPower;
-        this.isAuto = isAuto;
 
         pid = new PIDFController(pidfCoefficients);
         pidMovement = new PIDFController(predictiveMovementControl);
 
-        /* (old encoder resetting logic)
-            encoderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        /*  old encoder resetting logic
+            THE CALLS ARE ASYNCHRONOUS AND BEHAVE WEIRDLY
+
+            ncoderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             encoderMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             // This zeros the turret at each opmode start.
-            // AND ALSO ADDS AN OFFSET!!
-            overrideCorrectionOffset = - getEncoder() + (long)(RADIANS_TO_ENCODER_TICKS * Math.toRadians(AUTO_START_OFFSET));
+            overrideCorrectionOffset = - getEncoder();
         */
 
         if (reset) {
             encoderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             encoderMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             // This zeros the turret at each opmode start.
-            overrideCorrectionOffset = - getEncoder();
+            correctionOffset = - getEncoder();
         } else {
-            overrideCorrectionOffset = 0;
+            correctionOffset = 0;
         }
     }
 
@@ -171,9 +169,8 @@ public class Turret {
     }
 
     private long getEncoder() {
-        return encoderMotor.getCurrentPosition() + overrideCorrectionOffset;
+        return encoderMotor.getCurrentPosition() + correctionOffset;
     }
-
     private double exponentialPowerAlgo(double power) {
         double interior = power * 4 + 0.9;
         return ((Math.log10(interior) / Math.log10(2.71)) / 1.56) * 0.3 + power * 0.7;
@@ -187,7 +184,7 @@ public class Turret {
     public void manualOverride(double power) {
         if (Math.abs(power) < 0.01) {
             if (isOverride) {
-                overrideCorrectionOffset -= (getEncoder() - beforeCorrectionOffset);
+                correctionOffset -= (getEncoder() - beforeCorrectionOffset);
             }
             isOverride = false;
         } else {

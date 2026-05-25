@@ -45,7 +45,7 @@ public class AutoPaths {
         turnToOpenGate = createPath(poses.intake2Take, poses.turnToOpenGate, poses.turnToOpenGate0);
         // goal shoot paths
         intake3ToShoot = createPath(poses.intake3Take, poses.centerShoot45);
-        intake2ToShoot = createReverseTangentPath(poses.turnToOpenGate0, poses.centerShoot);
+        intake2ToShoot = createPath(poses.turnToOpenGate0, poses.centerShoot);
         intake1ToShoot = createReverseTangentPath(poses.intake1Take, poses.intake1Prep, poses.centerShootFromThird);
 
         goTo3rdSpike = createTangentPath(poses.centerShoot, poses.intake1Prep, poses.intake1Take);

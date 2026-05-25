@@ -37,7 +37,8 @@ public class TeleOpBlue extends OpMode {
 
         movement = new PedroMovement(hardwareMap, telemetry, poses.teleOpStart);
         intake = new Intake(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget, false);
-        turret = new Turret(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget, true, () -> Double.valueOf(gamepad1.right_stick_x), false);
+        turret = new Turret(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget,
+                () -> Double.valueOf(gamepad1.right_stick_x), false);
 
         timer = new ElapsedTime();
     }

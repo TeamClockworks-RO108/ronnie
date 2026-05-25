@@ -39,7 +39,7 @@ public abstract class AutoBase extends OpMode {
         paths = new AutoPaths(movement.getFollower(), poses);
 
         intake = new Intake(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget, true);
-        turret = new Turret(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget, true, () -> 0.0, true);
+        turret = new Turret(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget, () -> 0.0, true);
         intake.overrideTarget(1240);
 
 
@@ -48,7 +48,6 @@ public abstract class AutoBase extends OpMode {
 
     @Override
     public void start() {
-
         startFSM();
     }
 
