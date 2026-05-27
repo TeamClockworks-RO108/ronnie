@@ -55,7 +55,8 @@ public class HeavyGaterBlue extends AutoBase {
         // spike 1
         fsm.onStateEnter(State.INTAKE_SPIKE_1, () -> { movement.followPath(paths.goalToIntake3);
             intake.overrideTarget(1200);
-            turret.override(poses.intake3Take);}
+            turret.setOverridePose(poses.centerShoot);
+        }
         );
         fsm.onStateUpdate(State.INTAKE_SPIKE_1, () -> !movement.isBusy() ? State.INTAKE_TO_SHOOT_SPIKE_1 : null);
         fsm.onStateEnter(State.INTAKE_TO_SHOOT_SPIKE_1, () -> movement.followPath(paths.intake3ToShoot));
@@ -69,7 +70,6 @@ public class HeavyGaterBlue extends AutoBase {
         fsm.onStateEnter(State.INTAKE_SPIKE_2, () -> {
             movement.followPath(paths.goalToIntake2);
             intake.overrideTarget(1160);
-            turret.override(poses.intake2Take);
         });
         fsm.onStateUpdate(State.INTAKE_SPIKE_2, () -> !movement.isBusy()? State.OPEN_GATE_AFTER_SPIKE_2 : null);
         fsm.onStateEnter(State.OPEN_GATE_AFTER_SPIKE_2, () -> movement.followPath(paths.turnToOpenGate));
@@ -82,6 +82,7 @@ public class HeavyGaterBlue extends AutoBase {
         // 1st gate pass
         fsm.onStateEnter(State.OPEN_GATEPASS_1, () -> {
             movement.followPath(paths.shootTogate);
+            turret.setOverridePose(poses.gateShoot);
         });
         fsm.onStateUpdate(State.OPEN_GATEPASS_1, () -> !movement.isBusy() ? State.INTAKE_GATEPASS_1 : null);
         fsm.onStateUpdate(State.INTAKE_GATEPASS_1, (current, timeSinceTransition) -> timeSinceTransition > GATE_INTAKE_WAIT ? State.INTAKE_TO_SHOOT_GATEPASS_1 : null);

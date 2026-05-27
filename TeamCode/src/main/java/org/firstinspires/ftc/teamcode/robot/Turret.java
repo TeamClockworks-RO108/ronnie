@@ -24,8 +24,9 @@ public class Turret {
 
     private final Telemetry telemetry;
     private final Follower follower;
-    public static double goalTargetX = 138;
-    public static double goalTargetY = 148;
+
+    public static double goalTargetX;
+    public static double goalTargetY;
 
     private final PIDFController pid;
 
@@ -57,8 +58,10 @@ public class Turret {
 
         this.telemetry = telemetry;
         this.follower = follower;
+
         goalTargetX = goalTarget.getX();
         goalTargetY = goalTarget.getY();
+
         this.wheelRotationPower = wheelRotationPower;
 
         pid = new PIDFController(pidfCoefficients);
@@ -107,15 +110,29 @@ public class Turret {
         // }
     }
 
+    private Pose overridePose = null;
+
+    /**
+     *
+     * @param pose set to null to not use override
+     */
+    public void setOverridePose(Pose pose) {
+       this.overridePose = pose;
+    }
+
+    private Pose getRobotPose() {
+        return overridePose != null ? overridePose : follower.getPose();
+    }
+
     private double computeAngleMotion() {
         double turretLocalAngle = (getEncoder() / TICKS_PER_180) * Math.PI;
         turretLocalAngle = AngleUnit.normalizeRadians(turretLocalAngle);
 
-        double robotx = follower.getPose().getX();
-        double roboty = follower.getPose().getY();
+        double robotx = getRobotPose().getX();
+        double roboty = getRobotPose().getY();
         
 
-         double robotGlobalAngle = follower.getPose().getHeading();
+         double robotGlobalAngle = getRobotPose().getHeading();
 
         double turretGlobalAngle = AngleUnit.normalizeRadians(robotGlobalAngle + turretLocalAngle);
 
@@ -194,11 +211,5 @@ public class Turret {
             isOverride = true;
             setTurretPower(power);
         }
-    }
-
-    private static Pose overridePose = new Pose (0,0,0);
-
-    public void override(Pose pose){
-        //overridePose = pose;
     }
 }
