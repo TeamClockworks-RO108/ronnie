@@ -13,7 +13,7 @@ public class TeleOpPoses extends Poses {
         super(color);
         teleOpStart = createPose( 144 - 63.5, 109, -70); //-70
         humanBase = createPose(9, 9, Math.toRadians(180));
-        gateReset =  createPose(129 - 3, 72, 0);
+        gateReset =  createPose(120 - 3, 72, 0); // center robot is center pos, then 129
         gateResetCollect  =  createPose(144 - 17, 72 - 16, 0);
     }
 }

@@ -46,7 +46,7 @@ public class AutoPoses extends Poses {
         farShoot = createPose(0,0, 60);
         farLeave = createPose(5, 0, 0);
 
-        gateShoot = createPose(144 - 54, 144 - 56, -70);
+        gateShoot = createPose(144 - 54, 144 - 56, 0);
 
         // intake poses
         intake3Prep = createPose(INTAKE_START_X, INTAKE_3_Y, 0);
@@ -62,7 +62,7 @@ public class AutoPoses extends Poses {
         gateToShootIntermediary = createPose(100, 72, 0);
         leaveShoot = createPose(86, 107, -75);
 
-        gateIntakeTake = createPose (128.2, 58, 27);
+        gateIntakeTake = createPose (135.2, 56, 27);
         gateIntakePrep = createPose(108.1, 60.8, 27);
 
         turnToOpenGate = createPose (120.5, 62.5, -45);

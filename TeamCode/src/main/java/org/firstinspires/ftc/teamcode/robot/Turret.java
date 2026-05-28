@@ -19,7 +19,7 @@ public class Turret {
     private static final double TICKS_PER_180 = 14610;
     private static final double RADIANS_TO_ENCODER_TICKS = TICKS_PER_180 / Math.PI;
 //    private static final double AUTO_START_OFFSET = -7;
-    private static final double TURRET_LOWER_BOUND = -Math.PI * 3 / 4;
+    private static final double TURRET_LOWER_BOUND = -Math.PI * 5 / 8;
     private static final double TURRET_UPPER_BOUND = Math.PI / 2;
 
     private final Telemetry telemetry;
