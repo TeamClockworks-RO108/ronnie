@@ -40,6 +40,7 @@ public class HeavyGaterBlue extends AutoBase {
     protected void setupFSM() {
         // preload cycle
         fsm.onStateEnter(State.START_TO_SHOOT, () -> {
+            turret.setOverridePose(poses.centerShoot45);
             movement.followPath(paths.GoalStartToShoot);
             intake.command(Intake.Command.TOGGLE_INTAKE);
             intake.overrideTarget(1080);
@@ -55,7 +56,7 @@ public class HeavyGaterBlue extends AutoBase {
         // spike 1
         fsm.onStateEnter(State.INTAKE_SPIKE_1, () -> { movement.followPath(paths.goalToIntake3);
             intake.overrideTarget(1200);
-            turret.setOverridePose(poses.centerShoot);
+            turret.setOverridePose(poses.centerShoot45);
         }
         );
         fsm.onStateUpdate(State.INTAKE_SPIKE_1, () -> !movement.isBusy() ? State.INTAKE_TO_SHOOT_SPIKE_1 : null);
@@ -69,7 +70,9 @@ public class HeavyGaterBlue extends AutoBase {
         // spike 2 + gate
         fsm.onStateEnter(State.INTAKE_SPIKE_2, () -> {
             movement.followPath(paths.goalToIntake2);
+            turret.setOverridePose(poses.centerShootFromHuman);
             intake.overrideTarget(1160);
+
         });
         fsm.onStateUpdate(State.INTAKE_SPIKE_2, () -> !movement.isBusy()? State.OPEN_GATE_AFTER_SPIKE_2 : null);
         fsm.onStateEnter(State.OPEN_GATE_AFTER_SPIKE_2, () -> movement.followPath(paths.turnToOpenGate));

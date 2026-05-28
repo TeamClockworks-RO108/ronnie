@@ -163,17 +163,6 @@ public class Turret {
 
         double error = target - current;
 
-        // initial shortest path
-        double nextAngle = current + error;
-
-        // adjust illegals
-        if (!isWithinBoundaries(nextAngle)) {
-            if (error > 0.0)
-                error -= (2 * Math.PI);
-            else
-                error += (2 * Math.PI);
-        }
-
         return error;
     }
 
