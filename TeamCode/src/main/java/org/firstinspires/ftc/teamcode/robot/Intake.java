@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 @Configurable
 public class Intake {
-    private static double BARRIER_ON = 0.5, //0.425
+    private static double BARRIER_ON = 0.45, //0.425
                                 BARRIER_OFF = 0.7;
 
     private static final double BARRIER_VIBRATE_AMPLITUDE = 0.004;
@@ -145,10 +145,13 @@ public class Intake {
     }
 
     public void update(){
+        double time = System.currentTimeMillis();
+
+        if (isDisabled)
+            return;
+
         fsm.update();
         flywheel.update();
-
-        double time = System.currentTimeMillis();
 
         double barPos = barrier.getPosition();
         if (Math.abs(barPos - BARRIER_OFF) < (BARRIER_VIBRATE_AMPLITUDE + 0.001) && time - lastVibrate > BARRIER_VIBRATE_TIME) {
@@ -171,5 +174,10 @@ public class Intake {
 
     public Flywheel getFlywheel() {
         return flywheel;
+    }
+
+    private boolean isDisabled = false;
+    public void disable() {
+        isDisabled = true;
     }
 }

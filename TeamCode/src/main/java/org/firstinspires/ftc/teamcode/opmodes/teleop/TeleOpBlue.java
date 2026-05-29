@@ -21,8 +21,8 @@ public class TeleOpBlue extends OpMode {
     protected TeamColor color = TeamColor.BLUE;
 
     protected PedroMovement movement;
-    private Intake intake;
-    private Turret turret;
+    protected Intake intake;
+    protected Turret turret;
 
     private ElapsedTime timer;
 

@@ -97,7 +97,7 @@ public class Turret {
         pidMovement.updateError(wheelRotationPower.get());
         power += pidMovement.run();
 
-        if (!isOverride) {
+        if (!isOverride && !isDisabled) {
             setTurretPower(power);
         }
 
@@ -200,5 +200,10 @@ public class Turret {
             isOverride = true;
             setTurretPower(power);
         }
+    }
+
+    private boolean isDisabled = false;
+    public void disable() {
+        isDisabled = true;
     }
 }
