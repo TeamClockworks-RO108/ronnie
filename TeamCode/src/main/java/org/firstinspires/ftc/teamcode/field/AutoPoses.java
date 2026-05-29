@@ -60,9 +60,9 @@ public class AutoPoses extends Poses {
         gateCorner = createPose(115, 60, 0);
 
         gateToShootIntermediary = createPose(100, 72, 0);
-        leaveShoot = createPose(86, 107, -75);
+        leaveShoot = createPose(86, 107, -55);
 
-        gateIntakeTake = createPose (135.2, 56, 27);
+        gateIntakeTake = createPose (135.2, 56.8, 27);
         gateIntakePrep = createPose(108.1, 60.8, 27);
 
         turnToOpenGate = createPose (120.5, 62.5, -45);

@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 @Autonomous(name = "Gate BLUE")
 public class HeavyGaterBlue extends AutoBase {
-    private static final int GATE_INTAKE_WAIT = 1000;
+    private static final int GATE_INTAKE_WAIT = 700;
 
     protected StateMachine<State> fsm = new StateMachine<>(State.INIT);
     private double waitForTurret = 0;
@@ -17,7 +17,7 @@ public class HeavyGaterBlue extends AutoBase {
         INIT,
         START_TO_SHOOT, SHOOT_PRELOAD,
         INTAKE_SPIKE_1, INTAKE_TO_SHOOT_SPIKE_1, SHOOT_SPIKE_1,
-        INTAKE_SPIKE_2, INTAKE_TO_SHOOT_SPIKE_2, OPEN_GATE_AFTER_SPIKE_2, SHOOT_SPIKE_2,
+        INTAKE_SPIKE_2, INTAKE_TO_SHOOT_SPIKE_2, OPEN_GATE_AFTER_SPIKE_2, SHOOT_SPIKE_2, SHOOT_SPIKE_2_DELAY,
         OPEN_GATEPASS_1, INTAKE_GATEPASS_1, INTAKE_TO_SHOOT_GATEPASS_1, SHOOT_GATEPASS_1,
         OPEN_GATEPASS_2, INTAKE_GATEPASS_2, INTAKE_TO_SHOOT_GATEPASS_2, SHOOT_GATEPASS_2,
         OPEN_GATEPASS_3, INTAKE_GATEPASS_3, INTAKE_TO_SHOOT_GATEPASS_3, SHOOT_GATEPASS_3,
@@ -77,9 +77,10 @@ public class HeavyGaterBlue extends AutoBase {
         });
         fsm.onStateUpdate(State.INTAKE_SPIKE_2, () -> !movement.isBusy()? State.OPEN_GATE_AFTER_SPIKE_2 : null);
         fsm.onStateEnter(State.OPEN_GATE_AFTER_SPIKE_2, () -> movement.followPath(paths.turnToOpenGate));
-        fsm.onStateUpdate(State.OPEN_GATE_AFTER_SPIKE_2, () -> !movement.isBusy()? State.INTAKE_TO_SHOOT_SPIKE_2 : null);
+        fsm.onStateUpdate(State.OPEN_GATE_AFTER_SPIKE_2, (s, t) -> !movement.isBusy() || t > 1500 ? State.INTAKE_TO_SHOOT_SPIKE_2 : null);
         fsm.onStateEnter(State.INTAKE_TO_SHOOT_SPIKE_2, () -> movement.followPath(paths.intake2ToShoot));
-        fsm.onStateUpdate(State.INTAKE_TO_SHOOT_SPIKE_2, (current, timeSinceTransition) -> !movement.isBusy() && timeSinceTransition > waitForTurret ?  State.SHOOT_SPIKE_2 : null);
+        fsm.onStateUpdate(State.INTAKE_TO_SHOOT_SPIKE_2, (current, timeSinceTransition) -> !movement.isBusy() && timeSinceTransition > waitForTurret ?  State.SHOOT_SPIKE_2_DELAY : null);
+        fsm.onStateUpdate(State.SHOOT_SPIKE_2_DELAY, (current, timeSinceTransition) -> timeSinceTransition > 200 ? State.SHOOT_SPIKE_2 : null);
         fsm.onStateEnter(State.SHOOT_SPIKE_2, () -> intake.command(Intake.Command.LAUNCH));
         fsm.onStateUpdate(State.SHOOT_SPIKE_2, (current, timeSinceTransition) -> timeSinceTransition > intake.getShootTime() ? State.OPEN_GATEPASS_1: null);
 

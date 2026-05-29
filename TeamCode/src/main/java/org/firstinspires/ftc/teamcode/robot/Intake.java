@@ -13,7 +13,8 @@ import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 @Configurable
 public class Intake {
-    private static final double BARRIER_ON = 0.425, BARRIER_OFF = 0.7;
+    private static double BARRIER_ON = 0.5, //0.425
+                                BARRIER_OFF = 0.7;
 
     private static final double BARRIER_VIBRATE_AMPLITUDE = 0.004;
     private static final double BARRIER_VIBRATE_TIME = 400;
