@@ -40,10 +40,11 @@ public class Turret {
     private long correctionOffset = 0;
     private long beforeCorrectionOffset = 0;
 
-    public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(1.2, 0.3, 0.05, 0.3);
+    public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(1.28, 0.5, 0.05, 0.3);
 
-    // This moves the turret anticipatively by joystick input. works only in teleop.
-    private static PIDFCoefficients predictiveMovementControl = new PIDFCoefficients(0.13, 0, 0.01, 0);
+//    // This moves the turret anticipatively by joystick input. works only in teleop.
+//    private static PIDFCoefficients predictiveMovementControl = new PIDFCoefficients(0.13, 0, 0.01, 0);
+    private static PIDFCoefficients predictiveMovementControl = new PIDFCoefficients(0.8, 0, 0.1, 0.2);
     private final Supplier<Double> wheelRotationPower;
 
     public Turret(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose goalTarget,
