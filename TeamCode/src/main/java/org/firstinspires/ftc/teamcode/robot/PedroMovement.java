@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.control.PIDFCoefficients;
+import com.pedropathing.control.PIDFController;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -10,6 +14,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
+
+@Configurable
 public class PedroMovement {
     private static final double FINE_POWER = 0.25;
 
@@ -18,12 +24,22 @@ public class PedroMovement {
 
     private boolean areControlsFlipped = false;
 
+    private static double  targetGateHeading = 22;
+
+    private static PIDFCoefficients rotationPID  = new PIDFCoefficients(1, 0.0, 0.07, 0);
+
+    private PIDFController rotationPIDController;
+
+
+
     public PedroMovement(HardwareMap hardwareMap, Telemetry telemetry, Pose startingPose) {
         this.telemetry = telemetry;
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startingPose);
         follower.update();
+
+        rotationPIDController = new PIDFController(rotationPID);
     }
 
     public void update() {
@@ -38,9 +54,19 @@ public class PedroMovement {
     public void update(Gamepad gamepad1, Gamepad gamepad2) {
         update();
 
-        double y = gamepad1.left_stick_y + gamepad2.left_stick_y * FINE_POWER;
-        double x = gamepad1.left_stick_x + gamepad2.left_stick_x * FINE_POWER;
-        double heading = -gamepad1.right_stick_x - gamepad2.right_stick_x * FINE_POWER;
+       double extraHeadingPower = 0;
+
+//        if(gamepad1.left_bumper){
+//            rotationPIDController.setTargetPosition(targetGateHeading);
+//            rotationPIDController.updatePosition(follower.getHeading());
+//            extraHeadingPower = rotationPIDController.run();
+//
+//        } else
+//            rotationPIDController.reset();
+
+        double y = gamepad1.left_stick_y;
+        double x = gamepad1.left_stick_x ;
+        double heading = -gamepad1.right_stick_x;
         setTeleop(-y, -x, heading);
     }
 

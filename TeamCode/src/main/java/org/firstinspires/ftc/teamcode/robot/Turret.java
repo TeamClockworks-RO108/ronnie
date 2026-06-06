@@ -44,7 +44,7 @@ public class Turret {
 
 //    // This moves the turret anticipatively by joystick input. works only in teleop.
 //    private static PIDFCoefficients predictiveMovementControl = new PIDFCoefficients(0.13, 0, 0.01, 0);
-    private static PIDFCoefficients predictiveMovementControl = new PIDFCoefficients(0.8, 0, 0.1, 0.2);
+    private static PIDFCoefficients predictiveMovementControl = new PIDFCoefficients(0.8, 0, 0, 0);
     private final Supplier<Double> wheelRotationPower;
 
     public Turret(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose goalTarget,

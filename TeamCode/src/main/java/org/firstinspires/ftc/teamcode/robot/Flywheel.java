@@ -25,10 +25,10 @@ public class Flywheel {
 
     private final Pose targetPose;
 
-    private static double farHood = 0.72, centerHood = 0.59, defaultHood = 0.52, closeHood = 0.22;
-    private static double farSpeed = 1200, centerSpeed = 1300, defaultSpeed = 1160, closeSpeed = 1100;
+    private static double farHood = 0.61, centerHood = 0.59, defaultHood = 0.52, closeHood = 0.22;
+    private static double farSpeed = 1350, centerSpeed = 1300, defaultSpeed = 1160, closeSpeed = 1100;
 
-    private static double farDistance = 115, centerDistance = 100, defaultDistance = 65, closeDistance = 50;
+    private static double farDistance = 118, centerDistance = 100, defaultDistance = 65, closeDistance = 50;
 
     // DO NOT TOUCH THIS UNLESS NECESSARY
     public static double CORR_OFFSET_ANGLE = 0;

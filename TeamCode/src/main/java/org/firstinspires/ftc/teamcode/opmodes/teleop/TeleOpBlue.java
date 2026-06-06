@@ -29,6 +29,7 @@ public class TeleOpBlue extends OpMode {
 
     private TeleOpPoses poses;
 
+
     @Override
     public void init() {
         Drawing.init();
@@ -64,6 +65,9 @@ public class TeleOpBlue extends OpMode {
             }
         }
 
+       if(gamepad1.left_bumper) {
+
+       }
         // field centric reset
         if (gamepad1.dpadUpWasPressed()) {
             Pose current = movement.getFollower().getPose();

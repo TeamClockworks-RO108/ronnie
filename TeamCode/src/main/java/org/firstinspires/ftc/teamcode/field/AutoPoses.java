@@ -41,7 +41,7 @@ public class AutoPoses extends Poses {
         centerShootFromHuman = createPose(144 - 56, 144 - 56, -70);
         centerShootFromHumanPlusLeave = createPose(85, 108, -70);
         centerShootFromThird = createPose(144 - 58, 144 - 58, -90);
-        centerShoot45 = createPose(144 - 58, 144 - 58, -45);
+        centerShoot45 = createPose(144 - 58, 144 - 58, -30);
 
         farShoot = createPose(0,0, 60);
         farLeave = createPose(5, 0, 0);
