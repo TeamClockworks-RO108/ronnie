@@ -16,170 +16,94 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Configurable
 public class Flywheel {
     private final DcMotorEx rightMotor;
-
     private final DcMotorEx leftMotor;
     private final Telemetry telemetry;
-
     private final Follower follower;
     private final Servo hoodServo;
-
-    private final Pose targetPose;
-
-    private static double farHood = 0.61, centerHood = 0.59, defaultHood = 0.52, closeHood = 0.22;
-    private static double farSpeed = 1350, centerSpeed = 1300, defaultSpeed = 1160, closeSpeed = 1100;
-
-    private static double farDistance = 118, centerDistance = 100, defaultDistance = 65, closeDistance = 50;
-
-    // DO NOT TOUCH THIS UNLESS NECESSARY
-    public static double CORR_OFFSET_ANGLE = 0;
-
+    private final Pose goalPose;
     public static PIDFCoefficients constants = new PIDFCoefficients(.008, .000003, .00005, .003);
-
     private final PIDFController controller;
+    public static double LINEAR_A = -5.357;
+    public static double LINEAR_B = 0.294 - LINEAR_A * 0.6; // for accuracy in calculation
+    private static double G = 9.80665;
+    public static double V_TICKS = 1200;
+    private static double ROBOT_H = 30.0 / 100;
+    public static double GOAL_H = 106.0 / 100;
+    public static double RADIUS = 48.0 / 1000;
 
-    public static double aimingTarget;
-    public static double idleSpeed = 300;
-    public boolean running = false;
-    public boolean isAuto;
+    public static double TICKS_PER_REV = 28;
 
-    private long overrideTarget = -1;
-
-    public Flywheel(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose targetPose, boolean isAuto) {
+    public Flywheel(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose goalPose) {
         this.controller = new PIDFController(constants);
 
-
         rightMotor = hardwareMap.get(DcMotorEx.class, "flywheel");
-        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         leftMotor = hardwareMap.get(DcMotorEx.class, "flywheel1");
-        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         hoodServo = hardwareMap.get(Servo.class, "hood");
 
+
         this.telemetry = telemetry;
         this.follower = follower;
-        this.targetPose = targetPose;
-        this.isAuto = isAuto;
+        this.goalPose = goalPose;
     }
 
     public void update() {
-        double distanceShoot = distanceToGoal();
-        telemetry.addData("Flywheel 1 TPS", rightMotor.getVelocity());
-        telemetry.addData("Flywheel 2 TPS", leftMotor.getVelocity());
-        telemetry.addData("Distance to goal", distanceShoot);
+        rightMotor.setVelocity(V_TICKS / 2);
+        leftMotor.setVelocity(V_TICKS / 2);
 
-        boolean changed = false;
+        double ang = getAngle();
+        telemetry.addData("Hood required angle", Math.toDegrees(ang));
+        telemetry.addData("Distance to goal", distanceToGoal());
+    }
 
-        double roboty = follower.getPose().getY();
-        running = roboty > 0;
+    private double getAngle() {
+        double distanceShoot = distanceToGoal() / 100;
+        double V = toMps(V_TICKS);
 
-        if (running) {
-            double calculatedVelocity = 0, hoodPosition = 0;
+        double delta = Math.sqrt(pow(V, 4) - 2 * G * (GOAL_H - ROBOT_H) * pow(V, 2) - pow(G, 2) * pow(distanceShoot, 2));
 
-            double [] distances = new double[] { closeDistance, defaultDistance, centerDistance, farDistance, farDistance + 999};
-            double [] speeds = new double[] { closeSpeed, defaultSpeed, centerSpeed, farSpeed, farSpeed };
-            double [] hoods = new double[] { closeHood, defaultHood, centerHood, farHood, farHood };
+        double denominator = (G * distanceShoot);
 
-            int index = -1;
+        double t1 = (pow(V, 2) + delta) / denominator;
+        double t2 = (pow(V, 2) - delta) / denominator;
 
-            for (int i = 0; i < distances.length - 1; i++) {
-                if (distances[i] <= distanceShoot && distances[i+1] >= distanceShoot) {
-                    index = i;
-                    break;
-                }
-            }
+        telemetry.addData("t1", t1);
+        telemetry.addData("t2", t2);
+        telemetry.addData("V (m/s)", V);
+        telemetry.addData("V ticks (ticks/s)", V_TICKS);
 
+        return Math.atan(Math.max(t1, t2));
+    }
 
-            if (index == -1) {
-                if (distanceShoot > farDistance)
-                    index = distances.length - 2;
-                else
-                    index = 0;
-            }
+    private double pow(double v, int b) {
+        if(b == 0) return 1;
 
-            double extraDistance = distanceShoot - distances[index];
-            double totalDelta = distances[index + 1] - distances[index];
-            double coeff = totalDelta != 0 ? extraDistance / totalDelta : 0;
-            coeff = Math.max(coeff, 0);
-            coeff = Math.min(coeff, 1);
-
-            telemetry.addData("Flywheel Index:", index);
-            telemetry.addData("Flywheel Coeff:", coeff);
-
-            calculatedVelocity = speeds[index] * (1 - coeff) + speeds[index + 1] * coeff;
-            hoodPosition = hoods[index] * (1 - coeff) + hoods[index + 1] * coeff;
-
-            if (hoodServo.getPosition() != hoodPosition & !isAuto)
-                hoodServo.setPosition(hoodPosition);
-
-            if (calculatedVelocity != aimingTarget) {
-                aimingTarget = calculatedVelocity;
-                changed = true;
-            }
-        } else {
-            if (aimingTarget != idleSpeed)  {
-                aimingTarget = idleSpeed;
-                changed = true;
-            }
+        if(b % 2 == 0) {
+            double res = pow(v, b / 2);
+            return res * res;
         }
 
-        if (changed && !isAuto) {
-            controller.setTargetPosition(aimingTarget);
-        }
-        telemetry.addData("Flywheel Target TPS", -aimingTarget);
+        return v * pow(v, b - 1);
+    }
 
-        if ( changed && isAuto && overrideTarget != -1) {
-            rightMotor.setVelocity(overrideTarget);
-            leftMotor.setVelocity(overrideTarget);
-            hoodServo.setPosition(0.55);
-        }
-
-
-        double left = leftMotor.getVelocity();
-        double right = rightMotor.getVelocity();
-
-        if (Math.abs(left - right) > 65) {
-            telemetry.addData("Flywheel fault tolerance", Math.abs(left-right));
-            double max = (
-                    Math.abs(left) > Math.abs(right) ?
-                            left : right
-                    );
-            controller.updatePosition(max);
-        } else controller.updatePosition(left);
-        if( !isAuto) {
-            double power = controller.run();
-            telemetry.addData("Flywheel power", power);
-            leftMotor.setPower(power);
-            rightMotor.setPower(power);
-        }
+    private double toServoPos(double angle) {
+        return (angle - LINEAR_B) / LINEAR_A;
     }
 
     public double distanceToGoal() {
-        double x = follower.getPose().getX();
-        double y = follower.getPose().getY();
+        Pose curr = follower.getPose();
 
-        double dx = x - targetPose.getX();
-        double dy = y - targetPose.getY();
-
-        return Math.sqrt(dx * dx + dy * dy);
+        double deltaX = Math.abs(goalPose.getX() - curr.getX());
+        double deltaY = Math.abs(goalPose.getY() - curr.getY());
+        return Math.sqrt(pow(deltaX, 2) + pow(deltaY, 2));
     }
 
-    public void start() {
-        running = true;
-    }
-
-    public void idle(){
-        running = true;
-    }
-   public void stop() {
-       running = false;
-       aimingTarget = 0;
-    }
-
-    // Call with -1 to disable
-    public void overrideTarget(long  speed )  {
-        this.overrideTarget = speed;
+    public double toMps(double ticks) {
+        return 2 * RADIUS * Math.PI * ticks / TICKS_PER_REV;
     }
 }

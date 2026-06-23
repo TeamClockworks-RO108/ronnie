@@ -26,8 +26,6 @@ public class Intake {
     private final DcMotor rightIntake;
     private final DcMotor leftIntake;
     private final Servo barrier;
-    private final Flywheel flywheel;
-
     private enum State {
         IDLE,
         INTAKE,
@@ -54,7 +52,6 @@ public class Intake {
         leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
         rightIntake = hardwareMap.get(DcMotor.class, "rightIntake");
         barrier = hardwareMap.get(Servo.class, "barrier");
-        flywheel = new Flywheel(hardwareMap, telemetry, follower, targetPose, isAuto);
 
         leftIntake.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -63,8 +60,8 @@ public class Intake {
 
 
     private void start() {
-        leftIntake.setPower(0.8);
-        rightIntake.setPower(0.8);
+        leftIntake.setPower(0.9);
+        rightIntake.setPower(0.9);
     }
     private void stop() {
         leftIntake.setPower(0);
@@ -80,7 +77,6 @@ public class Intake {
         fsm.onStateEnter(State.IDLE,   () -> {
             stop();
             barrier.setPosition(BARRIER_ON);
-            flywheel.idle();
         });
         fsm.onStateUpdate(State.IDLE, () -> {
             if(unexecutedCommand == Command.TOGGLE_INTAKE){
@@ -114,7 +110,6 @@ public class Intake {
         });
 
         fsm.onStateEnter(State.PREPARE_FOR_LAUNCH, () -> {
-            flywheel.start();
         });
         fsm.onStateUpdate(State.PREPARE_FOR_LAUNCH,   (current, timeSinceTransition) -> {
             if(timeSinceTransition > TIME_TO_START_FLYWHEEL){
@@ -135,7 +130,6 @@ public class Intake {
         });
         fsm.onStateExit(State.LAUNCHING, () -> {
             barrier.setPosition(BARRIER_ON);
-            flywheel.idle();
         });
 
         fsm.onStateEnter(State.REJECTING, () -> reject());
@@ -151,7 +145,6 @@ public class Intake {
             return;
 
         fsm.update();
-        flywheel.update();
 
         double barPos = barrier.getPosition();
         if (Math.abs(barPos - BARRIER_OFF) < (BARRIER_VIBRATE_AMPLITUDE + 0.001) && time - lastVibrate > BARRIER_VIBRATE_TIME) {
@@ -165,15 +158,6 @@ public class Intake {
 
     public long getShootTime() {
         return TIME_TO_SHOOT;
-    }
-
-    public void overrideTarget(long target){
-        flywheel.overrideTarget(target);
-    }
-
-
-    public Flywheel getFlywheel() {
-        return flywheel;
     }
 
     private boolean isDisabled = false;
