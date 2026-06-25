@@ -48,7 +48,7 @@ public class Intake {
 
     private final StateMachine<State> fsm = new StateMachine<>(State.IDLE);
 
-    public Intake(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose targetPose, boolean isAuto) {
+    public Intake(HardwareMap hardwareMap) {
         leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
         rightIntake = hardwareMap.get(DcMotor.class, "rightIntake");
         barrier = hardwareMap.get(Servo.class, "barrier");
@@ -140,10 +140,6 @@ public class Intake {
 
     public void update(){
         double time = System.currentTimeMillis();
-
-        if (isDisabled)
-            return;
-
         fsm.update();
 
         double barPos = barrier.getPosition();
@@ -156,12 +152,4 @@ public class Intake {
         }
     }
 
-    public long getShootTime() {
-        return TIME_TO_SHOOT;
-    }
-
-    private boolean isDisabled = false;
-    public void disable() {
-        isDisabled = true;
-    }
 }

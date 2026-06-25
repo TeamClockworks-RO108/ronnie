@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -33,7 +32,7 @@ public class TeleOpBlue extends OpMode {
 
         movement = new PedroMovement(hardwareMap, telemetry, poses.teleopFarStart);
 
-        //intake = new Intake(hardwareMap, telemetry, movement.getFollower(), poses.goalTarget, false);
+        intake = new Intake(hardwareMap);
         turret = new Turret(hardwareMap, telemetry, movement.getFollower(), poses.blueGoal);
         flywheel = new Flywheel(hardwareMap, telemetry, movement.getFollower(), poses.blueGoal);
 
@@ -47,7 +46,7 @@ public class TeleOpBlue extends OpMode {
 
     @Override
     public void loop() {
-        /*if (gamepad1.rightBumperWasPressed()) {
+        if (gamepad1.rightBumperWasPressed()) {
             intake.command(Intake.Command.TOGGLE_INTAKE);
         }
         if (gamepad1.crossWasPressed()) {
@@ -56,17 +55,17 @@ public class TeleOpBlue extends OpMode {
         if (gamepad1.circleWasPressed()) {
             intake.command(Intake.Command.REJECT);
         }
-        if (gamepad1.squareWasPressed()) {
-            flywheelRunning = !flywheelRunning;
-            if (flywheelRunning) {
-                intake.getFlywheel().overrideTarget(-1);
-            } else {
-                intake.getFlywheel().overrideTarget(200);
-            }
-        }*/
+//        if (gamepad1.squareWasPressed()) {
+//            flywheelRunning = !flywheelRunning;
+//            if (flywheelRunning) {
+//                intake.getFlywheel().overrideTarget(-1);
+//            } else {
+//                intake.getFlywheel().overrideTarget(200);
+//            }
+//        }
 
         // field centric reset
-        if (gamepad1.dpadUpWasPressed()) {
+        /*if (gamepad1.dpadUpWasPressed()) {
             Pose current = movement.getFollower().getPose();
             movement.getFollower().setPose(new Pose(current.getX(), current.getY(), 0));
         }
@@ -78,11 +77,11 @@ public class TeleOpBlue extends OpMode {
         if (gamepad1.dpadRightWasPressed()) {
             movement.getFollower().setX(poses.gateResetCollect.getX());
             movement.getFollower().setY(poses.gateResetCollect.getY());
-        }
+        }*/
 
         movement.update(gamepad1, gamepad2);
 
-        //intake.update();
+        intake.update();
         turret.update();
         flywheel.update();
 

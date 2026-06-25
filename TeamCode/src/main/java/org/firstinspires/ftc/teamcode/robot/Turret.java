@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 @Configurable
 public class Turret {
@@ -53,12 +54,12 @@ public class Turret {
 
         setTurretPower(power);
 
-        telemetry.addData("Turret Encoder", getEncoder());
-
         double distanceToGoal = curr.distanceFrom(goalPose);
 
+        telemetry.addData("Turret Encoder", getEncoder());
         telemetry.addData("Distance to goal", distanceToGoal);
     }
+
     private double getAngleError(Pose curr) {
         double angle = Math.toRadians(getEncoder() * 180 / TICKS_PER_180);
 
@@ -80,7 +81,7 @@ public class Turret {
         telemetry.addData("Turret angle wrapped", Math.toDegrees(turretWrapped));
         telemetry.addData("Current angle", angle);
 
-        return Math.toDegrees(clamp(turretWrapped) - angle);
+        return MathUtil.clamp(angle, -Math.PI, Math.PI * 0.67);
     }
 
     private long getEncoder() {
@@ -90,9 +91,5 @@ public class Turret {
     private void setTurretPower(double power) {
         headingServo0.setPower(power);
         headingServo1.setPower(power);
-    }
-
-    private double clamp(double angle) {
-        return Math.max(-Math.PI, Math.min(0.67 * Math.PI, angle));
     }
 }

@@ -13,6 +13,6 @@ public class TeleOpPoses {
         gateReset =  new Pose(120 - 3, 72, Math.toRadians(0)); // center robot is center pos, then 129
         gateResetCollect  =  new Pose(144 - 17, 72 - 16, Math.toRadians(0));
         teleopFarStart = new Pose(8, 9, Math.toRadians(180));
-        blueGoal = new Pose(7, 134, Math.toRadians(0));
+        blueGoal = new Pose(6.8, 133.5, Math.toRadians(0));
     }
 }
