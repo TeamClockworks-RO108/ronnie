@@ -2,20 +2,18 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
+import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.control.PIDFController;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.field.TeleOpPoses;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 @Configurable
@@ -26,68 +24,63 @@ public class Flywheel {
     private final Follower follower;
     private final Servo hoodServo;
     private final Pose goalPose;
-    public static PIDFCoefficients constants = new PIDFCoefficients(100, 0.1, 1.1, 15);
-    public static double LINEAR_A = -5.357;
-    public static double LINEAR_B = 0.294 - LINEAR_A * 0.6; // for accuracy in calculation
+    public static PIDFCoefficients constants = new PIDFCoefficients(.03, .0001, .0001, .03);
+    public static double LINEAR_A = 1.68;
+    public static double LINEAR_B = -0.905;
     private static double G = 9.80665;
-    public static double V_TICKS = 3050;
+    public static double V_TICKS = 1420;
     private static double ROBOT_H = 30.0 / 100;
     public static double GOAL_H = 120.0 / 100;
     public static double RADIUS = 48.0 / 1000;
-    private static final double SERVO_LOWER_BOUND = 0.1889;
-    private static final double SERVO_UPPER_BOUND = 0.71;
-
-    public static double OFFSET = 20.0;
-
+    private static final double SERVO_LOWER_BOUND = 0.27;
+    private static final double SERVO_UPPER_BOUND = 1.0;
     private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
+    private final PIDFController pid;
 
     public Flywheel(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose goalPose) {
         rightMotor = hardwareMap.get(DcMotorEx.class, "flywheel");
-        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, constants);
 
         leftMotor = hardwareMap.get(DcMotorEx.class, "flywheel1");
-        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, constants);
+        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        pid = new PIDFController(constants);
 
         hoodServo = hardwareMap.get(Servo.class, "hood");
+        hoodServo.setDirection(Servo.Direction.REVERSE);
 
         this.telemetry = telemetry;
         this.follower = follower;
         this.goalPose = goalPose;
-        hoodServo.setPosition(0.44);
     }
 
     public void update() {
-        rightMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, constants);
-        leftMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, constants);
+        pid.updateError(V_TICKS - getVelocity());
+        double pow = pid.run();
 
-
-        rightMotor.setVelocity(V_TICKS / 2);
-        leftMotor.setVelocity(V_TICKS / 2);
+        leftMotor.setPower(pow);
+        rightMotor.setPower(pow);
 
         double ang = getAngle();
 
-        if(!Double.isNaN(ang)) {
+        if (!Double.isNaN(ang)) {
             double servoPos = MathUtil.clamp(toServoPos(ang), SERVO_LOWER_BOUND, SERVO_UPPER_BOUND);
             hoodServo.setPosition(servoPos);
         }
 
-        panelsTelemetry.getTelemetry().addData("left velocity", leftMotor.getVelocity());
-        panelsTelemetry.getTelemetry().addData("right velocity", rightMotor.getVelocity());
-        panelsTelemetry.getTelemetry().addData("target velocity", V_TICKS / 2);
+        panelsTelemetry.getTelemetry().addData("l", leftMotor.getVelocity());
+        panelsTelemetry.getTelemetry().addData("Current Velocity", getVelocity());
+        panelsTelemetry.getTelemetry().addData("Target velocity", V_TICKS);
 
         telemetry.addData("Hood angle (degrees)", Math.toDegrees(ang));
         telemetry.addData("Distance to goal", distanceToGoal());
-        telemetry.addData("Left velocity", leftMotor.getVelocity());
-        telemetry.addData("Right velocity", rightMotor.getVelocity());
-        telemetry.addData("Velocity avg", (leftMotor.getVelocity() + rightMotor.getVelocity()) / 2);
+
         panelsTelemetry.getTelemetry().update();
     }
 
     private double getAngle() {
-        double distanceShoot = (distanceToGoal() + OFFSET) * 2.54 / 100;
+        double distanceShoot = (distanceToGoal()) * 2.54 / 100;
         double V = toMps();
 
         double delta = Math.sqrt(pow(V, 4) - 2 * G * (GOAL_H - ROBOT_H) * pow(V, 2) - pow(G, 2) * pow(distanceShoot, 2));
@@ -98,30 +91,34 @@ public class Flywheel {
 
         double a1 = Math.atan(t1);
         double a2 = Math.atan(t2);
-        double middle = Math.toRadians(50);
+        double p1 = toServoPos(a1);
+        double p2 = toServoPos(a2);
+        double middle = (SERVO_LOWER_BOUND + SERVO_UPPER_BOUND) / 2;
         double angle;
 
-        if(Math.abs(middle - a1) > Math.abs(middle - a2)) {
+        if(inRange(p1, SERVO_LOWER_BOUND, SERVO_UPPER_BOUND) && !inRange(p2, SERVO_LOWER_BOUND, SERVO_UPPER_BOUND)) {
+            angle = a1;
+        } else if (inRange(p2, SERVO_LOWER_BOUND, SERVO_UPPER_BOUND) && !inRange(p1, SERVO_LOWER_BOUND, SERVO_UPPER_BOUND)) {
+            angle = a2;
+        } else if (Math.abs(middle - p1) > Math.abs(middle - p2)) {
             angle = a2;
         } else {
             angle = a1;
         }
 
-        telemetry.addData("t1", t1);
-        telemetry.addData("t2", t2);
-        telemetry.addData("atan(t1)", Math.atan(t1));
-        telemetry.addData("atan(t2)", Math.atan(t2));
+        telemetry.addData("Angle 1", Math.toDegrees(a1));
+        telemetry.addData("Angle 2", Math.toDegrees(a2));
+        telemetry.addData("Target angle", Math.toDegrees(angle));
         telemetry.addData("V (m/s)", V);
-        telemetry.addData("servo pos", hoodServo.getPosition());
-        telemetry.addData("target servo pos", toServoPos(angle));
+        telemetry.addData("Target servo pos", toServoPos(angle));
 
         return angle;
     }
 
     private double pow(double v, int b) {
-        if(b == 0) return 1;
+        if (b == 0) return 1;
 
-        if(b % 2 == 0) {
+        if (b % 2 == 0) {
             double res = pow(v, b / 2);
             return res * res;
         }
@@ -130,7 +127,11 @@ public class Flywheel {
     }
 
     private double toServoPos(double angle) {
-        return (angle - LINEAR_B) / LINEAR_A;
+        return angle * LINEAR_A + LINEAR_B;
+    }
+
+    private boolean inRange(double val, double l, double r) {
+        return val >= l && val <= r;
     }
 
     private double distanceToGoal() {
@@ -143,5 +144,10 @@ public class Flywheel {
 
     private double toMps() {
         return (leftMotor.getVelocity(AngleUnit.DEGREES) + rightMotor.getVelocity(AngleUnit.DEGREES)) / 2 * RADIUS;
+    }
+
+    // later make to switch between encoders
+    private double getVelocity() {
+        return leftMotor.getVelocity();
     }
 }

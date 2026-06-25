@@ -23,7 +23,7 @@ public class Turret {
     private final DcMotor encoderMotor;
     private final CRServo headingServo0, headingServo1;
 
-    public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(0.02, 0, 0.001, 0.3);
+    public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(0.3, 0, 0.01, 0.3);
 
     public Turret(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose goalTarget) {
         encoderMotor = hardwareMap.get(DcMotor.class, "leftFront");
@@ -56,6 +56,7 @@ public class Turret {
 
         double distanceToGoal = curr.distanceFrom(goalPose);
 
+        telemetry.addData("Turret pow", power);
         telemetry.addData("Turret Encoder", getEncoder());
         telemetry.addData("Distance to goal", distanceToGoal);
     }
@@ -78,10 +79,10 @@ public class Turret {
         telemetry.addData("Global angle", Math.toDegrees(globalAngle));
         telemetry.addData("Heading angle", Math.toDegrees(heading));
         telemetry.addData("Turret angle unwrapped", Math.toDegrees(turretAngle));
-        telemetry.addData("Turret angle wrapped", Math.toDegrees(turretWrapped));
+        telemetry.addData("Turret target angle wrapped", Math.toDegrees(turretWrapped));
         telemetry.addData("Current angle", angle);
 
-        return MathUtil.clamp(angle, -Math.PI, Math.PI * 0.67);
+        return MathUtil.clamp(turretWrapped - angle, -Math.PI, Math.PI * 0.67);
     }
 
     private long getEncoder() {
