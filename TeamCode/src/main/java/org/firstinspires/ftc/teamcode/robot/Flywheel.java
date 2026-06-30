@@ -28,7 +28,10 @@ public class Flywheel {
     public static double LINEAR_A = 1.68;
     public static double LINEAR_B = -0.905;
     private static double G = 9.80665;
-    public static double V_TICKS = 1450;
+    public static double V_TICKS_FAR = 1450;
+    public static double V_TICKS_CLOSE = 1300;
+    public static double V_TICKS_VERY_FAR = 1500;
+    private double velocity = .0;
     private static double ROBOT_H = 30.0 / 100;
     public static double GOAL_H = 120.0 / 100;
     public static double RADIUS = 48.0 / 1000;
@@ -36,6 +39,8 @@ public class Flywheel {
     private static final double SERVO_UPPER_BOUND = 1.0;
     private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
     private final PIDFController pid;
+    public static final double CLOSE_DIST = 88.582;
+    public static final double FAR_DIST = 131;
 
     public Flywheel(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose goalPose) {
         rightMotor = hardwareMap.get(DcMotorEx.class, "flywheel");
@@ -56,7 +61,9 @@ public class Flywheel {
     }
 
     public void update() {
-        pid.updateError(V_TICKS - getVelocity());
+        updateSpeed();
+
+        pid.updateError(velocity - getVelocity());
         double pow = pid.run();
 
         leftMotor.setPower(pow);
@@ -66,12 +73,19 @@ public class Flywheel {
 
         if (!Double.isNaN(ang)) {
             double servoPos = MathUtil.clamp(toServoPos(ang), SERVO_LOWER_BOUND, SERVO_UPPER_BOUND);
+
+            if(distanceToGoal() > FAR_DIST) {
+                //dist further than FAR_DIST cannot be achieved with
+                // any angle at a certain speed with calculation
+                servoPos = SERVO_LOWER_BOUND;
+            }
+
             hoodServo.setPosition(servoPos);
         }
 
         panelsTelemetry.getTelemetry().addData("l", leftMotor.getVelocity());
         panelsTelemetry.getTelemetry().addData("Current Velocity", getVelocity());
-        panelsTelemetry.getTelemetry().addData("Target velocity", V_TICKS);
+        panelsTelemetry.getTelemetry().addData("Target velocity", velocity);
 
         telemetry.addData("Hood angle (degrees)", Math.toDegrees(ang));
         telemetry.addData("Distance to goal", distanceToGoal());
@@ -128,6 +142,18 @@ public class Flywheel {
 
     private double toServoPos(double angle) {
         return angle * LINEAR_A + LINEAR_B;
+    }
+
+    private void updateSpeed() {
+        double dist = distanceToGoal();
+
+        if(dist <= CLOSE_DIST)  {
+            velocity = V_TICKS_CLOSE;
+        } else if(dist > CLOSE_DIST && dist <= FAR_DIST) {
+            velocity = V_TICKS_FAR;
+        } else {
+            velocity = V_TICKS_VERY_FAR;
+        }
     }
 
     private boolean inRange(double val, double l, double r) {
