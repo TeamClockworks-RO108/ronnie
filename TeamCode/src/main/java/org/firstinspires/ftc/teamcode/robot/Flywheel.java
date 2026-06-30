@@ -28,7 +28,7 @@ public class Flywheel {
     public static double LINEAR_A = 1.68;
     public static double LINEAR_B = -0.905;
     private static double G = 9.80665;
-    public static double V_TICKS = 1420;
+    public static double V_TICKS = 1450;
     private static double ROBOT_H = 30.0 / 100;
     public static double GOAL_H = 120.0 / 100;
     public static double RADIUS = 48.0 / 1000;
