@@ -30,6 +30,17 @@ public class BoltsAndSpeed extends OpMode {
     // Throttle magnitude below which the drive is treated as idle.
     private static final double THROTTLE_DEADZONE = 0.05;
 
+    // Drag-race mode: when true, throttle is pinned to full forward (overriding the stick).
+    private boolean dragFullThrottle = false;
+
+    /*
+     * ===== DRIVER CONTROLS (gamepad1) =====
+     *   Left stick Y   : throttle (forward / reverse)
+     *   Right stick X  : proportional steering
+     *   Dpad left/right: fixed-rate steering (dpadLeft/RightSteerPower)
+     *   Triangle (Y)   : toggle drag-race full-throttle on/off
+     */
+
     @Override
     public void init() {
         telemetry = new MultipleTelemetry(super.telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
@@ -111,8 +122,11 @@ public class BoltsAndSpeed extends OpMode {
         }
 
 
-        // drive: forward/back on the left stick.
-        double throttle = -gamepad1.left_stick_y;
+        // drive: forward/back on the left stick, or pinned full when drag-race mode is toggled on.
+        if (gamepad1.triangleWasPressed())
+            dragFullThrottle = !dragFullThrottle;
+
+        double throttle = dragFullThrottle ? 1.0 : -gamepad1.left_stick_y;
         boolean throttleRequested = Math.abs(throttle) > THROTTLE_DEADZONE;
 
         double driveSpeed = 0;
@@ -148,6 +162,7 @@ public class BoltsAndSpeed extends OpMode {
         // telemetry:
         //
         telemetry.addData("Current", totalCurrent);
+        telemetry.addData("Drag full throttle", dragFullThrottle);
         telemetry.addData("Steer power", steerPower);
         telemetry.addData("Drive speed", driveSpeed);
         telemetry.addData("Active motors/side", activeMotorsPerSide);
