@@ -55,29 +55,6 @@ public class TeleOpBlue extends OpMode {
         if (gamepad1.circleWasPressed()) {
             intake.command(Intake.Command.REJECT);
         }
-//        if (gamepad1.squareWasPressed()) {
-//            flywheelRunning = !flywheelRunning;
-//            if (flywheelRunning) {
-//                intake.getFlywheel().overrideTarget(-1);
-//            } else {
-//                intake.getFlywheel().overrideTarget(200);
-//            }
-//        }
-
-        // field centric reset
-        /*if (gamepad1.dpadUpWasPressed()) {
-            Pose current = movement.getFollower().getPose();
-            movement.getFollower().setPose(new Pose(current.getX(), current.getY(), 0));
-        }
-
-        if (gamepad1.dpadDownWasPressed()) {
-            movement.getFollower().setPose(poses.gateReset);
-        }
-        // gate reset
-        if (gamepad1.dpadRightWasPressed()) {
-            movement.getFollower().setX(poses.gateResetCollect.getX());
-            movement.getFollower().setY(poses.gateResetCollect.getY());
-        }*/
 
         movement.update(gamepad1, gamepad2);
 
@@ -95,8 +72,6 @@ public class TeleOpBlue extends OpMode {
         try {
             Drawing.drawRobot(follower.getPose());
             Drawing.sendPacket();
-
-
         } catch (Exception e) {
             throw new RuntimeException("Drawing failed " + e);
         }

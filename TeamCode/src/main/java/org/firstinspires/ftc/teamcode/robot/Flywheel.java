@@ -83,7 +83,8 @@ public class Flywheel {
             hoodServo.setPosition(servoPos);
         }
 
-        panelsTelemetry.getTelemetry().addData("l", leftMotor.getVelocity());
+        panelsTelemetry.getTelemetry().addData("l_v", leftMotor.getVelocity());
+        panelsTelemetry.getTelemetry().addData("r_v", rightMotor.getVelocity());
         panelsTelemetry.getTelemetry().addData("Current Velocity", getVelocity());
         panelsTelemetry.getTelemetry().addData("Target velocity", velocity);
 
@@ -174,6 +175,6 @@ public class Flywheel {
 
     // later make to switch between encoders
     private double getVelocity() {
-        return leftMotor.getVelocity();
+        return (leftMotor.getVelocity() + rightMotor.getVelocity()) / 2;
     }
 }

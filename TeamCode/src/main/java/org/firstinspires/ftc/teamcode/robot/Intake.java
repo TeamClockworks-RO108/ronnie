@@ -13,8 +13,8 @@ import org.firstinspires.ftc.teamcode.util.StateMachine;
 
 @Configurable
 public class Intake {
-    private static double BARRIER_ON = 0.45, //0.425
-                                BARRIER_OFF = 0.7;
+    private static double BARRIER_ON = 0.5, //0.425
+                                BARRIER_OFF = 0.2;
 
     private static final double BARRIER_VIBRATE_AMPLITUDE = 0.004;
     private static final double BARRIER_VIBRATE_TIME = 400;
@@ -90,9 +90,7 @@ public class Intake {
             return null;
         });
 
-        fsm.onStateEnter(State.INTAKE, () -> {
-            start();
-        });
+        fsm.onStateEnter(State.INTAKE, this::start);
         fsm.onStateUpdate(State.INTAKE, () -> {
            if(unexecutedCommand == Command.LAUNCH){
                unexecutedCommand = null;
