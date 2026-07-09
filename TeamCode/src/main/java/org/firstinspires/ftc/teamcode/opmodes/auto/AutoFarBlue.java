@@ -14,7 +14,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.field.TeleOpPoses;
+import org.firstinspires.ftc.teamcode.field.poses.Poses;
+import org.firstinspires.ftc.teamcode.field.poses.PosesBlue;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.robot.Flywheel;
 import org.firstinspires.ftc.teamcode.robot.Intake;
@@ -28,14 +29,14 @@ public class AutoFarBlue extends LinearOpMode {
     private Flywheel flywheel;
     private Turret turret;
     private Intake intake;
-    private static final TeleOpPoses poses = new TeleOpPoses();
+    private static final Poses poses = new PosesBlue();
     private ElapsedTime timer;
 
     private PathChain firstRowChain;
 
     private void initComponents() {
-        flywheel = new Flywheel(hardwareMap, telemetry, follower, poses.blueGoal);
-        turret = new Turret(hardwareMap, telemetry, follower, poses.blueGoal);
+        flywheel = new Flywheel(hardwareMap, telemetry, follower, poses.goal());
+        turret = new Turret(hardwareMap, telemetry, follower, poses.goal());
         intake = new Intake(hardwareMap);
         timer = new ElapsedTime();
     }
@@ -71,22 +72,6 @@ public class AutoFarBlue extends LinearOpMode {
         Command update = Command.build()
                 .setExecute(this::update);
 
-        Command shoot = Command.build()
-                .setStart(() -> {
-                    timer.reset();
-                    intake.command(Intake.Command.LAUNCH);
-                })
-                .setDone(() -> timer.milliseconds() >= 2500);
-
-
-        Command warmup = Command.build()
-                .setStart(() -> {
-                    timer.reset();
-                    intake.command(Intake.Command.TOGGLE_INTAKE);
-                })
-                .setDone(() -> timer.milliseconds() >= 2500);
-
-
         Command takeFirstRow = Command.build()
                 .setStart(() -> follower.followPath(firstRowChain))
                 .setDone(() -> !follower.isBusy());
@@ -94,10 +79,10 @@ public class AutoFarBlue extends LinearOpMode {
         waitForStart();
 
         Command auto = sequential(
-                warmup,
-                shoot,
+                intake.getGatherCommand(),
+                intake.getLaunchCommand(),
                 takeFirstRow,
-                shoot
+                intake.getLaunchCommand()
         );
 
         Scheduler.schedule(
@@ -115,7 +100,6 @@ public class AutoFarBlue extends LinearOpMode {
     private void update() {
         flywheel.update();
         turret.update();
-        intake.update();
         follower.update();
     }
 }

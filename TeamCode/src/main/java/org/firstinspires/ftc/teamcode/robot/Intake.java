@@ -1,52 +1,32 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.Pose;
+import com.pedropathing.ivy.Command;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.util.StateMachine;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Configurable
 public class Intake {
-    private static double BARRIER_ON = 0.5, //0.425
-                                BARRIER_OFF = 0.2;
+    public static double BARRIER_ON = 0.5;
+    public static double BARRIER_OFF = 0.2;
 
-    private static final double BARRIER_VIBRATE_AMPLITUDE = 0.004;
-    private static final double BARRIER_VIBRATE_TIME = 400;
-
-    private double lastVibrate;
-
-    private int TIME_TO_SHOOT = 400, TIME_TO_START_FLYWHEEL = 1500, TIME_TO_REJECT = 200;
+    public static int TIME_TO_SHOOT = 400; //todo: tune
 
     private final DcMotor rightIntake;
     private final DcMotor leftIntake;
     private final Servo barrier;
-    private enum State {
-        IDLE,
-        INTAKE,
-        PREPARE_FOR_LAUNCH,
-        LAUNCHING,
-        REJECTING,
-    }
 
-    public enum Command {
-        TOGGLE_INTAKE,
-        LAUNCH,
-        REJECT,
-    }
+    public static final double GATHER_POWER = 0.9;
+    public static final double REJECT_POWER = -0.4;
 
-    public void command(Command command){
-        unexecutedCommand = command;
-    }
+    private final ElapsedTime timer;
 
-    private Command unexecutedCommand = null;
-
-    private final StateMachine<State> fsm = new StateMachine<>(State.IDLE);
+    private final Command launchCommand;
+    private final Command gatherCommand;
+    private final Command rejectCommand;
 
     public Intake(HardwareMap hardwareMap) {
         leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
@@ -54,100 +34,64 @@ public class Intake {
         barrier = hardwareMap.get(Servo.class, "barrier");
 
         leftIntake.setDirection(DcMotorSimple.Direction.REVERSE);
+        timer = new ElapsedTime();
 
-        setupFSM();
+        stop();
+        barrier.setPosition(BARRIER_ON);
+
+        gatherCommand = Command.build()
+                .setStart(this::start)
+                .setDone(() -> leftIntake.getPower() == GATHER_POWER && rightIntake.getPower() == GATHER_POWER);
+
+        rejectCommand = Command.build()
+                .setStart(this::reject)
+                .setDone(() -> leftIntake.getPower() == REJECT_POWER && rightIntake.getPower() == REJECT_POWER);
+
+        launchCommand = Command.build()
+                .setStart(() -> {
+                    openBarrier();
+                    timer.reset();
+                })
+                .setDone(() -> timer.milliseconds() >= TIME_TO_SHOOT)
+                .setEnd((end) -> {
+                    closeBarrier();
+                });
     }
 
 
     private void start() {
-        leftIntake.setPower(0.9);
-        rightIntake.setPower(0.9);
+        leftIntake.setPower(GATHER_POWER);
+        rightIntake.setPower(GATHER_POWER);
     }
+
     private void stop() {
         leftIntake.setPower(0);
         rightIntake.setPower(0);
     }
+
     private void reject() {
-        leftIntake.setPower(-0.4);
-        rightIntake.setPower(-0.4);
+        leftIntake.setPower(REJECT_POWER);
+        rightIntake.setPower(REJECT_POWER);
     }
 
-    public void setupFSM(){
-
-        fsm.onStateEnter(State.IDLE,   () -> {
-            stop();
-            barrier.setPosition(BARRIER_ON);
-        });
-        fsm.onStateUpdate(State.IDLE, () -> {
-            if(unexecutedCommand == Command.TOGGLE_INTAKE){
-                unexecutedCommand = null;
-                return State.INTAKE;
-            }
-            if(unexecutedCommand == Command.LAUNCH){
-                unexecutedCommand = null;
-                return State.PREPARE_FOR_LAUNCH;
-            }
-            return null;
-        });
-
-        fsm.onStateEnter(State.INTAKE, this::start);
-        fsm.onStateUpdate(State.INTAKE, () -> {
-           if(unexecutedCommand == Command.LAUNCH){
-               unexecutedCommand = null;
-               return  State.LAUNCHING;
-           }
-           if(unexecutedCommand == Command.TOGGLE_INTAKE){
-               unexecutedCommand = null;
-               return State.IDLE;
-           }
-           if (unexecutedCommand == Command.REJECT) {
-               unexecutedCommand = null;
-               return State.REJECTING;
-           }
-           return null;
-        });
-
-        fsm.onStateEnter(State.PREPARE_FOR_LAUNCH, () -> {
-        });
-        fsm.onStateUpdate(State.PREPARE_FOR_LAUNCH,   (current, timeSinceTransition) -> {
-            if(timeSinceTransition > TIME_TO_START_FLYWHEEL){
-                return State.LAUNCHING;
-            }
-            return null;
-        });
-
-        fsm.onStateEnter(State.LAUNCHING, () -> {
-            start();
-            barrier.setPosition(BARRIER_OFF);
-        });
-        fsm.onStateUpdate(State.LAUNCHING,   (current, timeSinceTransition) -> {
-            if (timeSinceTransition > TIME_TO_SHOOT){
-                return State.INTAKE;
-            }
-            return null;
-        });
-        fsm.onStateExit(State.LAUNCHING, () -> {
-            barrier.setPosition(BARRIER_ON);
-        });
-
-        fsm.onStateEnter(State.REJECTING, () -> reject());
-        fsm.onStateUpdate(State.REJECTING, (current, timeSinceTransition) -> timeSinceTransition > TIME_TO_REJECT ? State.INTAKE : null);
-
-        fsm.init();
+    private void openBarrier() {
+        barrier.setPosition(BARRIER_OFF);
     }
 
-    public void update(){
-        double time = System.currentTimeMillis();
-        fsm.update();
+    private void closeBarrier() {
+        barrier.setPosition(BARRIER_ON);
+    }
 
-        double barPos = barrier.getPosition();
-        if (Math.abs(barPos - BARRIER_OFF) < (BARRIER_VIBRATE_AMPLITUDE + 0.001) && time - lastVibrate > BARRIER_VIBRATE_TIME) {
-            lastVibrate = time;
-            if (barPos < BARRIER_OFF)
-                barrier.setPosition(BARRIER_OFF + BARRIER_VIBRATE_AMPLITUDE);
-            else
-                barrier.setPosition(BARRIER_OFF - BARRIER_VIBRATE_AMPLITUDE);
-        }
+    public Command getLaunchCommand() {
+        return launchCommand;
+    }
+
+    public Command getGatherCommand() {
+        return gatherCommand;
+    }
+
+    public Command getRejectCommand() {
+        return rejectCommand;
     }
 
 }

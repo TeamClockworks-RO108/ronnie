@@ -3,38 +3,44 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.field.poses.Poses;
+import org.firstinspires.ftc.teamcode.field.Strategy;
 import org.firstinspires.ftc.teamcode.field.TeamColor;
-import org.firstinspires.ftc.teamcode.field.TeleOpPoses;
 import org.firstinspires.ftc.teamcode.robot.Flywheel;
 import org.firstinspires.ftc.teamcode.robot.Intake;
 import org.firstinspires.ftc.teamcode.robot.PedroMovement;
 import org.firstinspires.ftc.teamcode.robot.Turret;
 import org.firstinspires.ftc.teamcode.util.Drawing;
 
-@TeleOp(name = "TeleOp BLUE")
-public class TeleOpBlue extends OpMode {
-    protected TeamColor color = TeamColor.BLUE;
+public abstract class TeleOpBase extends OpMode {
     protected PedroMovement movement;
-    protected Intake intake;
-    protected Turret turret;
+    private Intake intake;
+    private Turret turret;
     private Flywheel flywheel;
     private ElapsedTime timer;
-    private TeleOpPoses poses;
+
+    protected final Poses poses;
+    private final Strategy strategy;
+
+    public TeleOpBase(TeamColor color, Strategy strategy) {
+        poses = color.poses;
+        this.strategy = strategy;
+    }
+
     @Override
     public void init() {
         Drawing.init();
         telemetry = new MultipleTelemetry(super.telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
-        poses = new TeleOpPoses();
 
-        movement = new PedroMovement(hardwareMap, telemetry, poses.teleopFarStart);
+        movement = new PedroMovement(hardwareMap, telemetry, poses.getStart(strategy));
 
         intake = new Intake(hardwareMap);
-        turret = new Turret(hardwareMap, telemetry, movement.getFollower(), poses.blueGoal);
-        flywheel = new Flywheel(hardwareMap, telemetry, movement.getFollower(), poses.blueGoal);
+        turret = new Turret(hardwareMap, telemetry, movement.getFollower(), poses.goal());
+        flywheel = new Flywheel(hardwareMap, telemetry, movement.getFollower(), poses.goal());
 
         timer = new ElapsedTime();
     }
@@ -47,28 +53,30 @@ public class TeleOpBlue extends OpMode {
     @Override
     public void loop() {
         if (gamepad1.rightBumperWasPressed()) {
-            intake.command(Intake.Command.TOGGLE_INTAKE);
+            Scheduler.schedule(intake.getGatherCommand());
         }
         if (gamepad1.crossWasPressed()) {
-            intake.command(Intake.Command.LAUNCH);
+            Scheduler.schedule(intake.getLaunchCommand());
         }
         if (gamepad1.circleWasPressed()) {
-            intake.command(Intake.Command.REJECT);
+            Scheduler.schedule(intake.getRejectCommand());
         }
 
-        movement.update(gamepad1, gamepad2);
+        movement.update(gamepad1);
 
-        intake.update();
         turret.update();
         flywheel.update();
 
         telemetry.addData("latency (ms)", timer.milliseconds());
         telemetry.update();
         drawRobotDashboard(movement.getFollower());
+
+        Scheduler.execute();
+
         timer.reset();
     }
 
-    public static void drawRobotDashboard(Follower follower) {
+    private static void drawRobotDashboard(Follower follower) {
         try {
             Drawing.drawRobot(follower.getPose());
             Drawing.sendPacket();
