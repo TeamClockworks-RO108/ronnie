@@ -11,10 +11,4 @@ public class TeleOpRedFar extends TeleOpBase {
     public TeleOpRedFar() {
         super(TeamColor.RED, Strategy.FAR);
     }
-
-    @Override
-    public void init() {
-        movement.flipControls();
-        super.init();
-    }
 }

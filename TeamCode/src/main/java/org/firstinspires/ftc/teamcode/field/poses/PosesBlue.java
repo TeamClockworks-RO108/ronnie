@@ -14,6 +14,6 @@ public class PosesBlue implements Poses{
 
     @Override
     public Pose goal() {
-        return new Pose(3.1, 135.4, Math.toRadians(0));
+        return new Pose(2.95, 135.4, Math.toRadians(0));
     }
 }

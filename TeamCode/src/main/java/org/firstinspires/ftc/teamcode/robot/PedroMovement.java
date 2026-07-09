@@ -26,7 +26,6 @@ public class PedroMovement {
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startingPose);
-        follower.update();
     }
 
     public void update() {

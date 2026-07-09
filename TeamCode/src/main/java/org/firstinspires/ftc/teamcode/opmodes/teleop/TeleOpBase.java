@@ -5,6 +5,7 @@ import com.bylazar.telemetry.PanelsTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.field.poses.Poses;
@@ -33,6 +34,8 @@ public abstract class TeleOpBase extends OpMode {
 
     @Override
     public void init() {
+        Scheduler.reset();
+
         Drawing.init();
         telemetry = new MultipleTelemetry(super.telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
 
@@ -68,6 +71,8 @@ public abstract class TeleOpBase extends OpMode {
         flywheel.update();
 
         telemetry.addData("latency (ms)", timer.milliseconds());
+        telemetry.addData("start x", poses.getStart(Strategy.FAR).getX());
+        telemetry.addData("start Y", poses.getStart(Strategy.FAR).getY());
         telemetry.update();
         drawRobotDashboard(movement.getFollower());
 
@@ -76,7 +81,7 @@ public abstract class TeleOpBase extends OpMode {
         timer.reset();
     }
 
-    private static void drawRobotDashboard(Follower follower) {
+    public static void drawRobotDashboard(Follower follower) {
         try {
             Drawing.drawRobot(follower.getPose());
             Drawing.sendPacket();

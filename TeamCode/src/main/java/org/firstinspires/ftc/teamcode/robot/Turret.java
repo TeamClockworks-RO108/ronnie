@@ -23,7 +23,7 @@ public class Turret {
     private final DcMotor encoderMotor;
     private final CRServo headingServo0, headingServo1;
 
-    public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(0.5, 0, 0.025, 0.3);
+    public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(0.9, 0, 0.025, 0.5);
 
     public Turret(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose goalTarget) {
         encoderMotor = hardwareMap.get(DcMotor.class, "leftFront");
