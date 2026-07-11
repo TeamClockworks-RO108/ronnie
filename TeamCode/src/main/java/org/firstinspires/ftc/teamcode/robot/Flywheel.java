@@ -24,7 +24,7 @@ public class Flywheel {
     private final Follower follower;
     private final Servo hoodServo;
     private final Pose goalPose;
-    public static PIDFCoefficients constants = new PIDFCoefficients(.03, .0001, .0001, .03);
+    public static PIDFCoefficients constants = new PIDFCoefficients(.032, .0, .0001, .03);
     public static double LINEAR_A = 1.68;
     public static double LINEAR_B = -0.905;
     private static double G = 9.80665;
@@ -170,11 +170,11 @@ public class Flywheel {
     }
 
     private double toMps() {
-        return (leftMotor.getVelocity(AngleUnit.DEGREES) + rightMotor.getVelocity(AngleUnit.DEGREES)) / 2 * RADIUS;
+        return leftMotor.getVelocity(AngleUnit.DEGREES) * RADIUS;
     }
 
     // later make to switch between encoders
     private double getVelocity() {
-        return (leftMotor.getVelocity() + rightMotor.getVelocity()) / 2;
+        return leftMotor.getVelocity();
     }
 }
