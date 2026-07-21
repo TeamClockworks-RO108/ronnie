@@ -41,7 +41,7 @@ public class Turret {
 
         pid = new PIDFController(pidfCoefficients);
 
-        encoderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        encoderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         encoderMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 

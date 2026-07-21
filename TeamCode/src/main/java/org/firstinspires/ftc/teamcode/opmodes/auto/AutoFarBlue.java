@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 
-import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -16,9 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.field.TeamColor;
 import org.firstinspires.ftc.teamcode.field.poses.Poses;
-import org.firstinspires.ftc.teamcode.field.poses.PosesBlue;
 import org.firstinspires.ftc.teamcode.opmodes.teleop.TeleOpBase;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.robot.Flywheel;
 import org.firstinspires.ftc.teamcode.robot.Intake;
 import org.firstinspires.ftc.teamcode.robot.PedroMovement;
@@ -34,6 +31,8 @@ public class AutoFarBlue extends LinearOpMode {
     private Intake intake;
     private static final Poses poses = TeamColor.BLUE.poses;
     private PathChain firstRowChain;
+
+    private PathChain takeHumanChain;
 
     private static final int WARMUP_TIME = 2500;
 
@@ -63,6 +62,23 @@ public class AutoFarBlue extends LinearOpMode {
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(90))
                 .build();
+
+        takeHumanChain = movement.getFollower().pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                startPose,
+                                new Pose(8, 9)
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .addPath(
+                        new BezierLine(
+                                new Pose(8, 9),
+                                startPose
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(90))
+                .build();
     }
 
     @Override
@@ -78,13 +94,28 @@ public class AutoFarBlue extends LinearOpMode {
                 .setStart(() -> movement.getFollower().followPath(firstRowChain))
                 .setDone(() -> !movement.getFollower().isBusy());
 
+        Command takeHuman = Command.build()
+                .setStart(() -> movement.getFollower().followPath(takeHumanChain))
+                .setDone(() -> !movement.getFollower().isBusy());
+
+        Command takeHumanCycle = sequential(
+                takeHuman,
+                waitCommand(250),
+                intake.getLaunchCommand()
+        );
+
         Command auto = sequential(
                 intake.getGatherCommand(),
                 waitCommand(WARMUP_TIME),
                 intake.getLaunchCommand(),
                 takeFirstRow,
                 waitCommand(500),
-                intake.getLaunchCommand()
+                intake.getLaunchCommand(),
+                takeHumanCycle,
+                takeHumanCycle,
+                takeHumanCycle,
+                takeHumanCycle,
+                takeHumanCycle
         );
 
         waitForStart();
