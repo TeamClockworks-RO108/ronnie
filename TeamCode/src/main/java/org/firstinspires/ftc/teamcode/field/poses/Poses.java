@@ -25,7 +25,7 @@ public interface Poses {
         return autoCloseStart();
     }
 
-    Pose getShoot();
+    Pose shootFar();
 
     Pose goal();
 }

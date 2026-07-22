@@ -13,7 +13,7 @@ public class Intake {
     public static double BARRIER_ON = 0.5;
     public static double BARRIER_OFF = 0.2;
 
-    public static int TIME_TO_SHOOT = 750; //todo: tune
+    public static int TIME_TO_SHOOT = 750;
 
     private final DcMotor rightIntake;
     private final DcMotor leftIntake;

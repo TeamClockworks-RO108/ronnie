@@ -28,7 +28,7 @@ public class PosesBlue implements Poses{
     }
 
     @Override
-    public Pose getShoot() {
+    public Pose shootFar() {
         return new Pose(45.226, 15);
     }
 }

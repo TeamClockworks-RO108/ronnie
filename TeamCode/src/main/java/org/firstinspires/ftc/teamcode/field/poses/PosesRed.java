@@ -29,7 +29,7 @@ public class PosesRed implements Poses {
     }
 
     @Override
-    public Pose getShoot() {
+    public Pose shootFar() {
         return null;
     }
 }
