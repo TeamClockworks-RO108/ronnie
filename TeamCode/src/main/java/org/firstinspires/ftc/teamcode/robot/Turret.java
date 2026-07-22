@@ -25,7 +25,8 @@ public class Turret {
 
     public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(0.9, 0, 0.025, 0.5);
 
-    public Turret(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose goalTarget) {
+    public Turret(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose goalTarget,
+                  boolean resetEncoders) {
         encoderMotor = hardwareMap.get(DcMotor.class, "leftFront");
 
         headingServo0 = hardwareMap.get(CRServo.class, "heading0");
@@ -41,7 +42,9 @@ public class Turret {
 
         pid = new PIDFController(pidfCoefficients);
 
-//        encoderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if (resetEncoders) {
+            encoderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
         encoderMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 

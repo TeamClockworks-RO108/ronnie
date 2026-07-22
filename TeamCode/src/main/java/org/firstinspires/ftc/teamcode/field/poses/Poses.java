@@ -9,11 +9,23 @@ public interface Poses {
 
     Pose teleopFarStart();
 
+    Pose autoFarStart();
+
+    Pose autoCloseStart();
+
     default Pose getStart(Strategy strategy) {
         if (strategy == Strategy.FAR) return teleopFarStart();
 
         return teleopCloseStart();
     }
+
+    default Pose getAutoStart(Strategy strategy) {
+        if(strategy == Strategy.FAR) return autoFarStart();
+
+        return autoCloseStart();
+    }
+
+    Pose getShoot();
 
     Pose goal();
 }

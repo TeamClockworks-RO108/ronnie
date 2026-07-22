@@ -13,7 +13,22 @@ public class PosesBlue implements Poses{
     }
 
     @Override
+    public Pose autoFarStart() {
+        return new Pose(45.226, 7.7, Math.toRadians(180));
+    }
+
+    @Override
+    public Pose autoCloseStart() {
+        return null;
+    }
+
+    @Override
     public Pose goal() {
         return new Pose(2.95, 135.4, Math.toRadians(0));
+    }
+
+    @Override
+    public Pose getShoot() {
+        return new Pose(45.226, 15);
     }
 }
