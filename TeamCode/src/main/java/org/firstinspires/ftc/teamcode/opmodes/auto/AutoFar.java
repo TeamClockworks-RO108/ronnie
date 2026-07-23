@@ -37,6 +37,23 @@ public abstract class AutoFar extends LinearOpMode {
 
     private static final int WARMUP_TIME = 2500;
 
+    private Wrapper inDump = new Wrapper(false);
+
+    public static class Wrapper {
+        private boolean val;
+
+        public Wrapper(boolean init) {
+            val = init;
+        }
+        public void set(boolean val) {
+            this.val = val;
+        }
+
+        public boolean get() {
+            return val;
+        }
+    }
+
     public AutoFar(TeamColor color) {
         poses = color.poses;
         paths = color.paths;
@@ -45,8 +62,8 @@ public abstract class AutoFar extends LinearOpMode {
     private void initComponents() {
         movement = new PedroMovement(hardwareMap, telemetry, poses.getAutoStart(FAR));
 
-        flywheel = new Flywheel(hardwareMap, telemetry, movement.getFollower(), poses.goal());
-        turret = new Turret(hardwareMap, telemetry, movement.getFollower(), poses.goal(), true);
+        flywheel = new Flywheel(hardwareMap, telemetry, movement.getFollower(), poses);
+        turret = new Turret(hardwareMap, telemetry, movement, poses, true);
         intake = new Intake(hardwareMap);
 
         sensor = new DistanceSensor(hardwareMap, telemetry);
@@ -76,13 +93,21 @@ public abstract class AutoFar extends LinearOpMode {
 
         Command takeHuman = Command.build()
                 .setStart(() -> movement.getFollower().followPath(takeHumanChain))
-                .setDone(() -> !movement.getFollower().isBusy());
+                .setExecute(() -> {
+                    inDump.set(true);
+                })
+                .setDone(() -> !movement.getFollower().isBusy())
+                .setEnd((end) -> {
+                   inDump.set(false);
+                });
 
         Command checkForFull = Command.build()
                 .setDone(() -> sensor.detectedFor(400) || !movement.getFollower().isBusy())
                 .setEnd((e) -> {
-                    PathChain chain = paths.getReturn(movement.getFollower());
+                    if(!inDump.get()) return;
+
                     movement.getFollower().breakFollowing();
+                    PathChain chain = paths.getReturn(movement.getFollower());
                     movement.getFollower().followPath(chain);
                 });
 
@@ -90,7 +115,7 @@ public abstract class AutoFar extends LinearOpMode {
                 parallel(
                         sequential(
                                 takeDump,
-                                waitCommand(500),
+                                waitCommand(150),
                                 intake.getLaunchCommand()
                         ),
                         checkForFull
@@ -108,7 +133,7 @@ public abstract class AutoFar extends LinearOpMode {
 
                 //human preload
                 takeHuman,
-                waitCommand(500),
+                waitCommand(150),
                 intake.getLaunchCommand(),
 
                 takeDumpChain,
@@ -131,7 +156,6 @@ public abstract class AutoFar extends LinearOpMode {
         }
 
         Scheduler.reset();
-        movement.getFollower().breakFollowing();
     }
 
     private void update() {

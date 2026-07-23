@@ -47,9 +47,9 @@ public abstract class TeleOpBase extends OpMode {
         Pose startPose =  RobotContext.getLastPose().orElse(poses.getStart(strategy));
         movement = new PedroMovement(hardwareMap, telemetry, startPose);
         intake = new Intake(hardwareMap);
-        turret = new Turret(hardwareMap, telemetry, movement.getFollower(), poses.goal(),
+        turret = new Turret(hardwareMap, telemetry, movement, poses,
                 RobotContext.getLastPose().isEmpty());
-        flywheel = new Flywheel(hardwareMap, telemetry, movement.getFollower(), poses.goal());
+        flywheel = new Flywheel(hardwareMap, telemetry, movement.getFollower(), poses);
         distanceSensor = new DistanceSensor(hardwareMap, telemetry);
 
         timer = new ElapsedTime();
@@ -72,6 +72,9 @@ public abstract class TeleOpBase extends OpMode {
         }
         if (gamepad1.circleWasPressed()) {
             Scheduler.schedule(intake.getRejectCommand());
+        }
+        if(gamepad1.dpadUpWasPressed()) {
+            movement.getFollower().setPose(poses.getResetPose());
         }
 
         movement.update(gamepad1);

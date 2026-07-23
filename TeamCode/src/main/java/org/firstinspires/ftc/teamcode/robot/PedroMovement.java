@@ -20,7 +20,6 @@ public class PedroMovement {
     private final Follower follower;
     private final Telemetry telemetry;
     private boolean areControlsFlipped = false;
-
     public PedroMovement(HardwareMap hardwareMap, Telemetry telemetry, Pose startingPose) {
         this.telemetry = telemetry;
 
@@ -76,5 +75,13 @@ public class PedroMovement {
 
     public Follower getFollower(){
         return follower;
+    }
+
+    public Pose getTurretPose() {
+        return new Pose(
+                getFollower().getPose().getX(),
+                getFollower().getPose().getY(),
+                getFollower().getHeading()
+        );
     }
 }

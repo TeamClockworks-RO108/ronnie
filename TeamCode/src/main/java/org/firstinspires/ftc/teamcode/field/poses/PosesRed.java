@@ -32,4 +32,9 @@ public class PosesRed implements Poses {
     public Pose shootFar() {
         return null;
     }
+
+    @Override
+    public Pose getResetPose() {
+        return null;
+    }
 }

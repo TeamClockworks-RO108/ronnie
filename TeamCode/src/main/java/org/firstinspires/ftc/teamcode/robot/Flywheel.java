@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.field.poses.Poses;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 @Configurable
@@ -23,7 +24,6 @@ public class Flywheel {
     private final Telemetry telemetry;
     private final Follower follower;
     private final Servo hoodServo;
-    private final Pose goalPose;
     public static PIDFCoefficients constants = new PIDFCoefficients(.032, .0, .0001, .03);
     public static double LINEAR_A = 1.68;
     public static double LINEAR_B = -0.905;
@@ -41,8 +41,9 @@ public class Flywheel {
     private final PIDFController pid;
     public static final double CLOSE_DIST = 88.582;
     public static final double FAR_DIST = 131;
+    private final Poses poses;
 
-    public Flywheel(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Pose goalPose) {
+    public Flywheel(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Poses poses) {
         rightMotor = hardwareMap.get(DcMotorEx.class, "flywheel");
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -57,7 +58,7 @@ public class Flywheel {
 
         this.telemetry = telemetry;
         this.follower = follower;
-        this.goalPose = goalPose;
+        this.poses = poses;
     }
 
     public void update() {
@@ -164,8 +165,8 @@ public class Flywheel {
     private double distanceToGoal() {
         Pose curr = follower.getPose();
 
-        double deltaX = goalPose.getX() - curr.getX();
-        double deltaY = goalPose.getY() - curr.getY();
+        double deltaX = poses.goal().getX() - curr.getX();
+        double deltaY = poses.goal().getY() - curr.getY();
         return Math.sqrt(pow(deltaX, 2) + pow(deltaY, 2));
     }
 

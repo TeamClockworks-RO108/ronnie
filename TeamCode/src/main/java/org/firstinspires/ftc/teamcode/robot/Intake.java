@@ -28,6 +28,7 @@ public class Intake {
     private final Command gatherCommand;
     private final Command rejectCommand;
 
+
     public Intake(HardwareMap hardwareMap) {
         leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
         rightIntake = hardwareMap.get(DcMotor.class, "rightIntake");

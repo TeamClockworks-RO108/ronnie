@@ -39,19 +39,20 @@ public class PathsBlue implements Paths {
                 .addPath(
                         new BezierCurve(
                                 TeamColor.BLUE.poses.shootFar(),
-                                new Pose(7, 7),
-                                new Pose(8, 40)
+                                new Pose(9, 6),
+                                new Pose(8, 30)
                         )
                 )
                 .setTangentHeadingInterpolation()
                 .addPath(
                         new BezierLine(
-                                new Pose(8, 40),
+                                new Pose(8, 30),
                                 TeamColor.BLUE.poses.shootFar()
                         )
                 )
                 .setTangentHeadingInterpolation()
                 .setReversed()
+                .setBrakingStrength(3)
                 .build();
     }
 
@@ -75,13 +76,13 @@ public class PathsBlue implements Paths {
                 .addPath(
                         new BezierLine(
                                 TeamColor.BLUE.poses.shootFar(),
-                                new Pose(9, 9)
+                                new Pose(13, 9)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .addPath(
                         new BezierLine(
-                                new Pose(9, 9),
+                                new Pose(13, 9),
                                 TeamColor.BLUE.poses.shootFar()
                         )
                 )

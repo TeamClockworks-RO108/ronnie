@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import com.pedropathing.control.FilteredPIDFCoefficients;
 import com.pedropathing.control.PIDFCoefficients;
+import com.pedropathing.control.PredictiveBrakingCoefficients;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
@@ -27,8 +28,8 @@ public class Constants {
             .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.16, 0.0003, 0.015, 0.02))
             .headingPIDFCoefficients(new PIDFCoefficients(1, 0.0, 0.07, 0))
             .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(2, 0, 0.09, 0))
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.0065, 0, 0.00072, 0.6, 0)
-            );
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.0065, 0, 0.00072, 0.6, 0))
+            .predictiveBrakingCoefficients(new PredictiveBrakingCoefficients(0.11, 0.07944204113241114, 0.0024323399908359493));
 
     public static MecanumConstants driveConstants = new MecanumConstants()
             .leftFrontMotorName("leftFront")
@@ -44,7 +45,7 @@ public class Constants {
             .useBrakeModeInTeleOp(true);
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(-2.36) //tune
+            .forwardPodY(-2.36)
             .strafePodX(-7.08)
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName("pinpoint")

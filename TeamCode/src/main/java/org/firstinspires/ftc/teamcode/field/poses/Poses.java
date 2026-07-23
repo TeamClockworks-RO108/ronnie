@@ -28,4 +28,6 @@ public interface Poses {
     Pose shootFar();
 
     Pose goal();
+
+    Pose getResetPose();
 }
