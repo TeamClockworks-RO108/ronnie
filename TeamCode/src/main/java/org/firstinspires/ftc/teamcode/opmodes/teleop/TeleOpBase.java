@@ -6,7 +6,6 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.field.Strategy;
@@ -65,16 +64,18 @@ public abstract class TeleOpBase extends OpMode {
     @Override
     public void loop() {
         if (gamepad1.rightBumperWasPressed()) {
-            Scheduler.schedule(intake.getGatherCommand());
+            Scheduler.schedule(intake.getTogglePowerCommand());
         }
         if (gamepad1.crossWasPressed()) {
             Scheduler.schedule(intake.getLaunchCommand());
         }
         if (gamepad1.circleWasPressed()) {
-            Scheduler.schedule(intake.getRejectCommand());
+            Scheduler.schedule(intake.getToggleDirectionCommand());
         }
         if(gamepad1.dpadUpWasPressed()) {
-            movement.getFollower().setPose(poses.getResetPose());
+            movement.getFollower().setX(poses.getResetPose().getX());
+            movement.getFollower().setY(poses.getResetPose().getY());
+            movement.getFollower().setHeading(poses.getResetPose().getHeading());
         }
 
         movement.update(gamepad1);

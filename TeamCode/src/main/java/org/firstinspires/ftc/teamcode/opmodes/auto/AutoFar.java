@@ -122,7 +122,7 @@ public abstract class AutoFar extends LinearOpMode {
                 );
 
         Command auto = sequential(
-                intake.getGatherCommand(),
+                intake.getTogglePowerCommand(),
                 waitCommand(WARMUP_TIME),
 
                 intake.getLaunchCommand(),
