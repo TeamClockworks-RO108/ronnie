@@ -32,12 +32,14 @@ public abstract class AutoFar extends LinearOpMode {
 
     private PathChain firstRowChain;
     private PathChain takeDumpChain;
+    private PathChain takeDumpChain2;
     private PathChain takeHumanChain;
+    private PathChain parkChain;
     private DistanceSensor sensor;
 
-    private static final int WARMUP_TIME = 2500;
+    private static final int WARMUP_TIME = 1800;
 
-    private Wrapper inDump = new Wrapper(false);
+    private final Wrapper inDump = new Wrapper(false);
 
     public static class Wrapper {
         private boolean val;
@@ -64,7 +66,7 @@ public abstract class AutoFar extends LinearOpMode {
 
         flywheel = new Flywheel(hardwareMap, telemetry, movement.getFollower(), poses);
         turret = new Turret(hardwareMap, telemetry, movement, poses, true);
-        intake = new Intake(hardwareMap);
+        intake = new Intake(hardwareMap, telemetry);
 
         sensor = new DistanceSensor(hardwareMap, telemetry);
     }
@@ -73,6 +75,8 @@ public abstract class AutoFar extends LinearOpMode {
         firstRowChain = paths.getFirstRow(movement.getFollower());
         takeHumanChain = paths.getHuman(movement.getFollower());
         takeDumpChain = paths.getDump(movement.getFollower(), sensor);
+        takeDumpChain2 = paths.getDump(movement.getFollower(), sensor);
+        parkChain = paths.getPark(movement.getFollower());
     }
 
     @Override
@@ -89,6 +93,11 @@ public abstract class AutoFar extends LinearOpMode {
 
         Command takeDump = Command.build()
                 .setStart(() -> movement.getFollower().followPath(takeDumpChain))
+                .setDone(() -> !movement.getFollower().isBusy());
+
+
+        Command takeDump2 = Command.build()
+                .setStart(() -> movement.getFollower().followPath(takeDumpChain2))
                 .setDone(() -> !movement.getFollower().isBusy());
 
         Command takeHuman = Command.build()
@@ -115,31 +124,47 @@ public abstract class AutoFar extends LinearOpMode {
                 parallel(
                         sequential(
                                 takeDump,
-                                waitCommand(150),
-                                intake.getLaunchCommand()
+//                                waitCommand(150),
+                                intake.getLaunchNoCloseCommand()
                         ),
                         checkForFull
                 );
+        Command takeDumpChain2 =
+                parallel(
+                        sequential(
+                                takeDump2,
+//                                waitCommand(150),
+                                intake.getLaunchNoCloseCommand()
+                        ),
+                        checkForFull
+                );
+
+        Command park = Command.build()
+                .setStart(() -> {
+                    movement.getFollower().followPath(parkChain);
+                })
+                .setDone(() -> !movement.isBusy());
 
         Command auto = sequential(
                 intake.getTogglePowerCommand(),
                 waitCommand(WARMUP_TIME),
 
-                intake.getLaunchCommand(),
+                intake.getLaunchNoCloseCommand(),
 
                 takeFirstRow,
-                waitCommand(500),
-                intake.getLaunchCommand(),
+                intake.getLaunchNoCloseCommand(),
 
                 //human preload
                 takeHuman,
-                waitCommand(150),
-                intake.getLaunchCommand(),
+                intake.getLaunchNoCloseCommand(),
 
                 takeDumpChain,
+                takeDumpChain2,
                 takeDumpChain,
+                takeDumpChain2,
                 takeDumpChain,
-                takeDumpChain
+                takeDumpChain2,
+                park
         );
 
         waitForStart();

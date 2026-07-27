@@ -8,12 +8,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 @Configurable
 public class Intake {
     public static double BARRIER_ON = 0.5;
     public static double BARRIER_OFF = 0.2;
 
-    public static int TIME_TO_SHOOT = 750;
+    public static int TIME_TO_SHOOT = 450;
 
     private final DcMotor rightIntake;
     private final DcMotor leftIntake;
@@ -27,12 +29,19 @@ public class Intake {
     private final Command launchCommand;
     private final Command togglePowerCommand;
     private final Command toggleReverseCommand;
+    private final Command stopCommand;
+
+    private final Command launchNoCloseCommand;
 
     private boolean reversed;
     private boolean running;
 
+    private Telemetry telemetry;
 
-    public Intake(HardwareMap hardwareMap) {
+    private ElapsedTime stopCooldown;
+
+
+    public Intake(HardwareMap hardwareMap, Telemetry telemetry) {
         leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
         rightIntake = hardwareMap.get(DcMotor.class, "rightIntake");
         barrier = hardwareMap.get(Servo.class, "barrier");
@@ -45,21 +54,60 @@ public class Intake {
 
         barrier.setPosition(BARRIER_ON);
 
+        stopCooldown = new ElapsedTime();
+
+        this.telemetry = telemetry;
+
         togglePowerCommand = Command.build()
                 .setStart(() -> running = !running)
+                .setDone(() -> true)
                 .setEnd((__) -> updatePower());
 
         toggleReverseCommand = Command.build()
                 .setStart(() -> reversed = !reversed)
+                .setDone(() -> true)
                 .setEnd((__) -> updatePower());
 
         launchCommand = Command.build()
                 .setStart(() -> {
+                    running = true;
+                    reversed = false;
+                    updatePower();
+
                     openBarrier();
                     timer.reset();
                 })
                 .setDone(() -> timer.milliseconds() >= TIME_TO_SHOOT)
-                .setEnd((__) -> closeBarrier());
+                .setEnd((__) -> {
+                    closeBarrier();
+                    running = false;
+                    updatePower();
+                });
+
+        launchNoCloseCommand = Command.build()
+                .setStart(() -> {
+                    running = true;
+                    reversed = false;
+                    updatePower();
+
+                    openBarrier();
+                    timer.reset();
+                })
+                .setDone(() -> timer.milliseconds() >= TIME_TO_SHOOT)
+                .setEnd((__) -> {
+                    closeBarrier();
+                });
+
+        stopCommand = Command.build()
+                .setStart(() -> {
+                    if(stopCooldown.milliseconds() <= 2000) return;
+                    running = false;
+                })
+                .setDone(() -> true)
+                .setEnd((__) -> {
+                    updatePower();
+                    stopCooldown.reset();
+                });
     }
 
     private void updatePower() {
@@ -69,6 +117,16 @@ public class Intake {
             if (!reversed) start();
             else reject();
         }
+    }
+
+    public void update() {
+        telemetry.addData("Running", running);
+        telemetry.addData("Reverse", reversed);
+    }
+
+    public void manual(double pow) {
+        leftIntake.setPower(pow);
+        rightIntake.setPower(pow);
     }
 
     private void start() {
@@ -104,6 +162,14 @@ public class Intake {
 
     public Command getToggleDirectionCommand() {
         return toggleReverseCommand;
+    }
+
+    public Command getStopCommand() {
+        return stopCommand;
+    }
+
+    public Command getLaunchNoCloseCommand() {
+        return launchNoCloseCommand;
     }
 
 }

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
+import android.util.Log;
+
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.pedropathing.follower.Follower;
@@ -45,7 +47,7 @@ public abstract class TeleOpBase extends OpMode {
 
         Pose startPose =  RobotContext.getLastPose().orElse(poses.getStart(strategy));
         movement = new PedroMovement(hardwareMap, telemetry, startPose);
-        intake = new Intake(hardwareMap);
+        intake = new Intake(hardwareMap, telemetry);
         turret = new Turret(hardwareMap, telemetry, movement, poses,
                 RobotContext.getLastPose().isEmpty());
         flywheel = new Flywheel(hardwareMap, telemetry, movement.getFollower(), poses);
@@ -77,12 +79,16 @@ public abstract class TeleOpBase extends OpMode {
             movement.getFollower().setY(poses.getResetPose().getY());
             movement.getFollower().setHeading(poses.getResetPose().getHeading());
         }
+        if(distanceSensor.detectedFor(500)) {
+            Scheduler.schedule(intake.getStopCommand());
+        }
 
         movement.update(gamepad1);
 
         turret.update();
         flywheel.update();
         distanceSensor.update();
+        intake.update();
 
         telemetry.addData("latency (ms)", timer.milliseconds());
         drawRobotDashboard(movement.getFollower());

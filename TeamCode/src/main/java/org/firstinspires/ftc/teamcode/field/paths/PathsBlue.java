@@ -11,6 +11,9 @@ import org.firstinspires.ftc.teamcode.field.TeamColor;
 import org.firstinspires.ftc.teamcode.robot.DistanceSensor;
 
 public class PathsBlue implements Paths {
+    private final double[] nextY = {9, 35};
+    private int idx = 0;
+
     @Override
     public PathChain getFirstRow(Follower follower) {
         return follower.pathBuilder()
@@ -37,22 +40,19 @@ public class PathsBlue implements Paths {
         return follower
                 .pathBuilder()
                 .addPath(
-                        new BezierCurve(
+                        new BezierLine(
                                 TeamColor.BLUE.poses.shootFar(),
-                                new Pose(9, 6),
-                                new Pose(8, 30)
+                                new Pose(12, nextY[idx % nextY.length])
                         )
                 )
-                .setTangentHeadingInterpolation()
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .addPath(
                         new BezierLine(
-                                new Pose(8, 30),
+                                new Pose(12, nextY[idx++ % nextY.length]),
                                 TeamColor.BLUE.poses.shootFar()
                         )
                 )
-                .setTangentHeadingInterpolation()
-                .setReversed()
-                .setBrakingStrength(3)
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
     }
 
@@ -65,8 +65,7 @@ public class PathsBlue implements Paths {
                                 TeamColor.BLUE.poses.shootFar()
                         )
                 )
-                .setTangentHeadingInterpolation()
-                .setReversed()
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
     }
 
@@ -76,13 +75,13 @@ public class PathsBlue implements Paths {
                 .addPath(
                         new BezierLine(
                                 TeamColor.BLUE.poses.shootFar(),
-                                new Pose(13, 9)
+                                new Pose(9, 9)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .addPath(
                         new BezierLine(
-                                new Pose(13, 9),
+                                new Pose(9, 9),
                                 TeamColor.BLUE.poses.shootFar()
                         )
                 )
@@ -92,6 +91,11 @@ public class PathsBlue implements Paths {
 
     @Override
     public PathChain getPark(Follower follower) {
-        return null;
+        return follower.pathBuilder()
+                .addPath(new BezierLine(
+                        TeamColor.BLUE.poses.shootFar(),
+                        new Pose(30, 9)
+                ))
+                .build();
     }
 }
