@@ -38,10 +38,11 @@ public class Flywheel {
     private static final double SERVO_LOWER_BOUND = 0.27;
     private static final double SERVO_UPPER_BOUND = 1.0;
     private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
-    private final PIDFController pid;
     public static final double CLOSE_DIST = 88.582;
     public static final double FAR_DIST = 131;
     private final Poses poses;
+
+    private final PIDFController pid;
 
     public Flywheel(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Poses poses) {
         rightMotor = hardwareMap.get(DcMotorEx.class, "flywheel");
@@ -51,10 +52,10 @@ public class Flywheel {
         leftMotor = hardwareMap.get(DcMotorEx.class, "flywheel1");
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        pid = new PIDFController(constants);
-
         hoodServo = hardwareMap.get(Servo.class, "hood");
         hoodServo.setDirection(Servo.Direction.REVERSE);
+
+        pid = new PIDFController(constants);
 
         this.telemetry = telemetry;
         this.follower = follower;

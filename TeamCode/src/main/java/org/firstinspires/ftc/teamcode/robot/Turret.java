@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.field.TeamColor;
 import org.firstinspires.ftc.teamcode.field.poses.Poses;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 
@@ -28,10 +29,14 @@ public class Turret {
 
     private final Poses poses;
 
+    private TeamColor color;
+
     public static double OFFSET = -0.155;
 
     public Turret(HardwareMap hardwareMap, Telemetry telemetry, PedroMovement movement, Poses poses,
-                  boolean resetEncoders) {
+                  boolean resetEncoders, TeamColor color) {
+        this.color = color;
+
         encoderMotor = hardwareMap.get(DcMotor.class, "leftFront");
 
         headingServo0 = hardwareMap.get(CRServo.class, "heading0");
@@ -107,10 +112,18 @@ public class Turret {
     }
 
     public double getOffset(double heading) {
-        if(Math.abs(Math.toDegrees(heading)) <= 80) {
-            return OFFSET;
-        }
+        if(color == TeamColor.BLUE) {
+            if (Math.abs(Math.toDegrees(heading)) <= 80) {
+                return OFFSET;
+            }
 
-        return 0;
+            return 0;
+        } else {
+            if (Math.toDegrees(heading) >= 100 || Math.toDegrees(heading) < -100) {
+                return -OFFSET;
+            }
+
+            return 0;
+        }
     }
 }

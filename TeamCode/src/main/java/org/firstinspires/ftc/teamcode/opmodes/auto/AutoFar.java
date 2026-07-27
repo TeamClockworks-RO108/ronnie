@@ -37,6 +37,8 @@ public abstract class AutoFar extends LinearOpMode {
     private PathChain parkChain;
     private DistanceSensor sensor;
 
+    private final TeamColor color;
+
     private static final int WARMUP_TIME = 1800;
 
     private final Wrapper inDump = new Wrapper(false);
@@ -59,13 +61,14 @@ public abstract class AutoFar extends LinearOpMode {
     public AutoFar(TeamColor color) {
         poses = color.poses;
         paths = color.paths;
+        this.color = color;
     }
 
     private void initComponents() {
         movement = new PedroMovement(hardwareMap, telemetry, poses.getAutoStart(FAR));
 
         flywheel = new Flywheel(hardwareMap, telemetry, movement.getFollower(), poses);
-        turret = new Turret(hardwareMap, telemetry, movement, poses, true);
+        turret = new Turret(hardwareMap, telemetry, movement, poses, true, color);
         intake = new Intake(hardwareMap, telemetry);
 
         sensor = new DistanceSensor(hardwareMap, telemetry);

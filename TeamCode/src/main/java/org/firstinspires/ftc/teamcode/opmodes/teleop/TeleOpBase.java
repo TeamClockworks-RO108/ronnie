@@ -28,14 +28,16 @@ public abstract class TeleOpBase extends OpMode {
     private Flywheel flywheel;
     private ElapsedTime timer;
 
+    private TeamColor color;
     protected final Poses poses;
     private final Strategy strategy;
 
     private DistanceSensor distanceSensor;
 
     public TeleOpBase(TeamColor color, Strategy strategy) {
-        poses = color.poses;
+        this.color = color;
         this.strategy = strategy;
+        poses = color.poses;
     }
 
     @Override
@@ -49,7 +51,7 @@ public abstract class TeleOpBase extends OpMode {
         movement = new PedroMovement(hardwareMap, telemetry, startPose);
         intake = new Intake(hardwareMap, telemetry);
         turret = new Turret(hardwareMap, telemetry, movement, poses,
-                RobotContext.getLastPose().isEmpty());
+                RobotContext.getLastPose().isEmpty(), color);
         flywheel = new Flywheel(hardwareMap, telemetry, movement.getFollower(), poses);
         distanceSensor = new DistanceSensor(hardwareMap, telemetry);
 
@@ -60,6 +62,8 @@ public abstract class TeleOpBase extends OpMode {
 
     @Override
     public void start() {
+        if(color == TeamColor.RED) movement.flipControls();
+
         movement.getFollower().startTeleOpDrive();
     }
 
