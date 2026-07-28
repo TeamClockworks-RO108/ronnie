@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 @Configurable
 public class Turret {
-    private static final double TICKS_PER_180 = 14610;
+    public static double TICKS_PER_180 = 14000;//23 77
     private final Telemetry telemetry;
     private final Follower follower;
     private final PedroMovement movement;
@@ -25,15 +25,15 @@ public class Turret {
     private final DcMotor encoderMotor;
     private final CRServo headingServo0, headingServo1;
 
-    public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(0.9, 0, 0.025, 0.5);
+    public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(0.7, 0, 0.0004, 0);
 
-    private final Poses poses;
+    private final Pose goal;
 
     private TeamColor color;
 
-    public static double OFFSET = -0.155;
+    public static double OFFSET = 0;
 
-    public Turret(HardwareMap hardwareMap, Telemetry telemetry, PedroMovement movement, Poses poses,
+    public Turret(HardwareMap hardwareMap, Telemetry telemetry, PedroMovement movement, Pose goal,
                   boolean resetEncoders, TeamColor color) {
         this.color = color;
 
@@ -49,7 +49,7 @@ public class Turret {
         this.follower = movement.getFollower();
         this.movement = movement;
 
-        this.poses = poses;
+        this.goal = goal;
 
         pid = new PIDFController(pidfCoefficients);
 
@@ -68,7 +68,7 @@ public class Turret {
 
         setTurretPower(power);
 
-        double distanceToGoal = curr.distanceFrom(poses.goal());
+        double distanceToGoal = curr.distanceFrom(goal);
 
         telemetry.addData("Turret pow", power);
         telemetry.addData("Turret Encoder", getEncoder());
@@ -79,8 +79,8 @@ public class Turret {
         double angle = Math.toRadians(getEncoder() * 180 / TICKS_PER_180);
 
         double heading = follower.getHeading();
-        double x = poses.goal().getX() - follower.getPose().getX();
-        double y = poses.goal().getY() - follower.getPose().getY();
+        double x = goal.getX() - follower.getPose().getX();
+        double y = goal.getY() - follower.getPose().getY();
 
         double offset = getOffset(heading);
         telemetry.addData("Offset for heading " + heading, offset);

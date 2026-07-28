@@ -8,6 +8,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.field.Strategy;
@@ -48,9 +49,9 @@ public abstract class TeleOpBase extends OpMode {
         telemetry = new MultipleTelemetry(super.telemetry, PanelsTelemetry.INSTANCE.getFtcTelemetry());
 
         Pose startPose =  RobotContext.getLastPose().orElse(poses.getStart(strategy));
-        movement = new PedroMovement(hardwareMap, telemetry, startPose);
+        movement = new PedroMovement(hardwareMap, telemetry,startPose);
         intake = new Intake(hardwareMap, telemetry);
-        turret = new Turret(hardwareMap, telemetry, movement, poses,
+        turret = new Turret(hardwareMap, telemetry, movement, poses.goal(),
                 RobotContext.getLastPose().isEmpty(), color);
         flywheel = new Flywheel(hardwareMap, telemetry, movement.getFollower(), poses);
         distanceSensor = new DistanceSensor(hardwareMap, telemetry);
@@ -83,9 +84,19 @@ public abstract class TeleOpBase extends OpMode {
             movement.getFollower().setY(poses.getResetPose().getY());
             movement.getFollower().setHeading(poses.getResetPose().getHeading());
         }
-        if(distanceSensor.detectedFor(500)) {
-            Scheduler.schedule(intake.getStopCommand());
+
+        if(gamepad1.squareWasPressed()) {
+            movement.getFollower().turnTo(
+                    color == TeamColor.RED ?
+                            Math.toRadians(0) :
+                            Math.toRadians(180)
+            );
         }
+
+
+//        if(distanceSensor.detectedFor(500)) {
+//            Scheduler.schedule(intake.getStopCommand());
+//        }
 
         movement.update(gamepad1);
 
@@ -105,6 +116,8 @@ public abstract class TeleOpBase extends OpMode {
     public static void drawRobotDashboard(Follower follower) {
         try {
             Drawing.drawRobot(follower.getPose());
+            Drawing.drawRobot(TeamColor.BLUE.poses.goal());
+            Drawing.drawRobot(TeamColor.RED.poses.goal());
             Drawing.sendPacket();
         } catch (Exception e) {
             throw new RuntimeException("Drawing failed " + e);

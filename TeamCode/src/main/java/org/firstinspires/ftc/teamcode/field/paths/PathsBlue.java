@@ -11,7 +11,6 @@ import org.firstinspires.ftc.teamcode.field.TeamColor;
 import org.firstinspires.ftc.teamcode.robot.DistanceSensor;
 
 public class PathsBlue implements Paths {
-    private final double[] nextY = {9, 35};
     private int idx = 0;
 
     @Override
@@ -37,23 +36,41 @@ public class PathsBlue implements Paths {
 
     @Override
     public PathChain getDump(Follower follower, DistanceSensor sensor) {
-        return follower
-                .pathBuilder()
-                .addPath(
-                        new BezierLine(
-                                TeamColor.BLUE.poses.shootFar(),
-                                new Pose(12, nextY[idx % nextY.length])
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .addPath(
-                        new BezierLine(
-                                new Pose(12, nextY[idx++ % nextY.length]),
-                                TeamColor.BLUE.poses.shootFar()
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(180))
-                .build();
+        if(idx == 0) {
+            idx = 1;
+
+            return follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierLine(
+                                    TeamColor.BLUE.poses.shootFar(),
+                                    new Pose(12, 9)
+                            )
+                    )
+                    .setConstantHeadingInterpolation(Math.toRadians(180))
+                    .addPath(
+                            new BezierLine(
+                                    new Pose(12, 9),
+                                    TeamColor.BLUE.poses.shootFar()
+                            )
+                    )
+                    .setConstantHeadingInterpolation(Math.toRadians(180))
+                    .build();
+        } else {
+            idx = 0;
+
+            return follower
+                    .pathBuilder()
+                    .addPath(
+                            new BezierCurve(
+                                    TeamColor.BLUE.poses.shootFar(),
+                                    new Pose(50, 42),
+                                    new Pose(12, 35.799)
+                            )
+                    )
+                    .setConstantHeadingInterpolation(Math.toDegrees(180))
+                    .build();
+        }
     }
 
     @Override

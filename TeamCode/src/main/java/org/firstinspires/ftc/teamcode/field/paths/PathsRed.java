@@ -11,7 +11,6 @@ import org.firstinspires.ftc.teamcode.field.TeamColor;
 import org.firstinspires.ftc.teamcode.robot.DistanceSensor;
 
 public class PathsRed implements Paths {
-    private final double[] nextY = {9, 35};
     private int idx = 0;
 
     @Override
@@ -21,13 +20,13 @@ public class PathsRed implements Paths {
                         new BezierCurve(
                                 TeamColor.RED.poses.getAutoStart(Strategy.FAR),
                                 new Pose(93, 42),
-                                new Pose(130, 35.799)
+                                new Pose(132.391, 34.216)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(
                         new BezierLine(
-                                new Pose(130, 35.799),
+                                new Pose(132.391, 34.216),
                                 TeamColor.RED.poses.shootFar()
                         )
                 )
@@ -42,13 +41,13 @@ public class PathsRed implements Paths {
                 .addPath(
                         new BezierLine(
                                 TeamColor.RED.poses.shootFar(),
-                                new Pose(130, nextY[idx % nextY.length])
+                                new Pose(132.391, nextY[idx % nextY.length])
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(
                         new BezierLine(
-                                new Pose(130, nextY[idx++ % nextY.length]),
+                                new Pose(132.391, nextY[idx++ % nextY.length]),
                                 TeamColor.RED.poses.shootFar()
                         )
                 )
@@ -75,13 +74,13 @@ public class PathsRed implements Paths {
                 .addPath(
                         new BezierLine(
                                 TeamColor.RED.poses.shootFar(),
-                                new Pose(130, 9)
+                                new Pose(133, 4)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(
                         new BezierLine(
-                                new Pose(130, 9),
+                                new Pose(133, 4 ),
                                 TeamColor.RED.poses.shootFar()
                         )
                 )

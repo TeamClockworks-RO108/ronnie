@@ -4,6 +4,7 @@ import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static org.firstinspires.ftc.teamcode.field.Strategy.FAR;
 
+import com.pedropathing.geometry.Pose;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.paths.PathChain;
@@ -39,6 +40,8 @@ public abstract class AutoFar extends LinearOpMode {
 
     private final TeamColor color;
 
+    private static final Pose goal = new Pose(134, 135);
+
     private static final int WARMUP_TIME = 1800;
 
     private final Wrapper inDump = new Wrapper(false);
@@ -68,7 +71,7 @@ public abstract class AutoFar extends LinearOpMode {
         movement = new PedroMovement(hardwareMap, telemetry, poses.getAutoStart(FAR));
 
         flywheel = new Flywheel(hardwareMap, telemetry, movement.getFollower(), poses);
-        turret = new Turret(hardwareMap, telemetry, movement, poses, true, color);
+        turret = new Turret(hardwareMap, telemetry, movement, goal, true, color);
         intake = new Intake(hardwareMap, telemetry);
 
         sensor = new DistanceSensor(hardwareMap, telemetry);

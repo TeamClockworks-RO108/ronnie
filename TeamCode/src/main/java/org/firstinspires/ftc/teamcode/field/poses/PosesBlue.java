@@ -14,7 +14,7 @@ public class PosesBlue implements Poses{
 
     @Override
     public Pose teleopFarStart() {
-        return new Pose(8, 9, Math.toRadians(180));
+        return new Pose(7.848, 10.596, Math.toRadians(180));
     }
 
     @Override
@@ -39,6 +39,6 @@ public class PosesBlue implements Poses{
 
     @Override
     public Pose getResetPose() {
-        return new Pose(131, 9, Math.toRadians(0));
+        return new Pose(133, 8.5528, Math.toRadians(0));
     }
 }
