@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.arcrobotics.ftclib.util.InterpLUT;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.pedropathing.control.PIDFCoefficients;
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.field.poses.Poses;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
+import org.firstinspires.ftc.teamcode.util.VVPidf;
 
 @Configurable
 public class Flywheel {
@@ -24,13 +26,14 @@ public class Flywheel {
     private final Telemetry telemetry;
     private final Follower follower;
     private final Servo hoodServo;
-    public static PIDFCoefficients constants = new PIDFCoefficients(.032, .0, .0001, .09);
+//    public static PIDFCoefficients constants = new PIDFCoefficients(0.007, 0, 0.0001, 0.00039);
+    public static PIDFCoefficients constants = new PIDFCoefficients(0.032, 0, 0.0001, 0.09);
     public static double LINEAR_A = 1.68;
     public static double LINEAR_B = -0.905;
     private static double G = 9.80665;
     public static double V_TICKS_FAR = 1450;
     public static double V_TICKS_CLOSE = 1300;
-    public static double V_TICKS_VERY_FAR = 1500;
+    public static double V_TICKS_VERY_FAR = 1650;
     private double velocity = .0;
     private static double ROBOT_H = 30.0 / 100;
     public static double GOAL_H = 120.0 / 100;
@@ -41,7 +44,11 @@ public class Flywheel {
     public static final double CLOSE_DIST = 88.582;
     public static final double FAR_DIST = 131;
     private final Poses poses;
+    private final InterpLUT interp = new InterpLUT();
 
+//    private final PIDFController pid;
+
+    private final VVPidf pidf;
     private final PIDFController pid;
 
     public Flywheel(HardwareMap hardwareMap, Telemetry telemetry, Follower follower, Poses poses) {
@@ -57,16 +64,34 @@ public class Flywheel {
 
         pid = new PIDFController(constants);
 
+        pidf = new VVPidf();
+
         this.telemetry = telemetry;
         this.follower = follower;
         this.poses = poses;
+
+//        interp.add(130, 1500);
+//        interp.add(133, 1670);
+//        interp.add(145, 1700);
+//        interp.add(160, 1800);
+//        interp.add(500, 1800);
+        interp.add(0, 1450);
+        interp.add(131, 1450);
+        interp.add(140, 1600);
+        interp.add(500, 1600);
+
+        interp.createLUT();
     }
 
     public void update() {
+        pidf.set_coeffs(constants.P, constants.D, constants.F, 0);
+
         updateSpeed();
 
         pid.updateError(velocity - getVelocity());
         double pow = pid.run();
+
+//        double pow = pidf.update(getVelocity(), velocity);
 
         leftMotor.setPower(pow);
         rightMotor.setPower(pow);
@@ -152,10 +177,8 @@ public class Flywheel {
 
         if(dist <= CLOSE_DIST)  {
             velocity = V_TICKS_CLOSE;
-        } else if(dist > CLOSE_DIST && dist <= FAR_DIST) {
-            velocity = V_TICKS_FAR;
         } else {
-            velocity = V_TICKS_VERY_FAR;
+            velocity = interp.get(dist);
         }
     }
 

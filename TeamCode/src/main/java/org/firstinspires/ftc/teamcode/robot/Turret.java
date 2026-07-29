@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 @Configurable
 public class Turret {
-    public static double TICKS_PER_180 = 14000;//23 77
+    public static double TICKS_PER_180 = 13712;//23 77
     private final Telemetry telemetry;
     private final Follower follower;
     private final PedroMovement movement;
@@ -25,7 +25,8 @@ public class Turret {
     private final DcMotor encoderMotor;
     private final CRServo headingServo0, headingServo1;
 
-    public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(0.7, 0, 0.0004, 0);
+//    public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(0.75, 0.0, 0.0755 , 0);
+    public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(0.9, 0.0, 0.038 , 0);
 
     private final Pose goal;
 
@@ -82,11 +83,10 @@ public class Turret {
         double x = goal.getX() - follower.getPose().getX();
         double y = goal.getY() - follower.getPose().getY();
 
-        double offset = getOffset(heading);
-        telemetry.addData("Offset for heading " + heading, offset);
+        telemetry.addData("Offset", OFFSET);
 
         double globalAngle = Math.atan2(y, x);
-        double turretAngle = globalAngle - heading + getOffset(heading);
+        double turretAngle = globalAngle - heading + OFFSET;
 
         double sine = Math.sin(turretAngle);
         double cosine = Math.cos(turretAngle);
@@ -111,19 +111,7 @@ public class Turret {
         headingServo1.setPower(power);
     }
 
-    public double getOffset(double heading) {
-        if(color == TeamColor.BLUE) {
-            if (Math.abs(Math.toDegrees(heading)) <= 80) {
-                return OFFSET;
-            }
-
-            return 0;
-        } else {
-            if (Math.toDegrees(heading) >= 100 || Math.toDegrees(heading) < -100) {
-                return -OFFSET;
-            }
-
-            return 0;
-        }
+    public void offset(int multiplier) {
+        OFFSET += Math.toRadians(2.5 * multiplier);
     }
 }

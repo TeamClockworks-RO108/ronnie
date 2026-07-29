@@ -40,6 +40,8 @@ public class Intake {
 
     private ElapsedTime stopCooldown;
 
+    public static double TRANSFER_POW = 0.9;
+
 
     public Intake(HardwareMap hardwareMap, Telemetry telemetry) {
         leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
@@ -73,6 +75,8 @@ public class Intake {
                     running = true;
                     reversed = false;
                     updatePower();
+                    leftIntake.setPower(TRANSFER_POW);
+                    rightIntake.setPower(TRANSFER_POW);
 
                     openBarrier();
                     timer.reset();

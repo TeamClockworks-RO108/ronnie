@@ -29,7 +29,7 @@ public abstract class TeleOpBase extends OpMode {
     private Flywheel flywheel;
     private ElapsedTime timer;
 
-    private TeamColor color;
+    private final TeamColor color;
     protected final Poses poses;
     private final Strategy strategy;
 
@@ -83,6 +83,13 @@ public abstract class TeleOpBase extends OpMode {
             movement.getFollower().setX(poses.getResetPose().getX());
             movement.getFollower().setY(poses.getResetPose().getY());
             movement.getFollower().setHeading(poses.getResetPose().getHeading());
+        }
+
+        if(gamepad1.dpadLeftWasPressed()) {
+            turret.offset(-1);
+        }
+        if(gamepad1.dpadRightWasPressed()) {
+            turret.offset(1);
         }
 
         if(gamepad1.squareWasPressed()) {

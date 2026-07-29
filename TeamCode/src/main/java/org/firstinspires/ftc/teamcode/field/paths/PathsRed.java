@@ -74,13 +74,13 @@ public class PathsRed implements Paths {
                 .addPath(
                         new BezierLine(
                                 TeamColor.RED.poses.shootFar(),
-                                new Pose(133, 4)
+                                new Pose(132.391, 4)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(
                         new BezierLine(
-                                new Pose(133, 4 ),
+                                new Pose(132.391, 4 ),
                                 TeamColor.RED.poses.shootFar()
                         )
                 )

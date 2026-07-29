@@ -39,27 +39,12 @@ public abstract class AutoFar extends LinearOpMode {
     private DistanceSensor sensor;
 
     private final TeamColor color;
+    private ElapsedTime timeout;
 
     private static final Pose goal = new Pose(134, 135);
 
     private static final int WARMUP_TIME = 1800;
 
-    private final Wrapper inDump = new Wrapper(false);
-
-    public static class Wrapper {
-        private boolean val;
-
-        public Wrapper(boolean init) {
-            val = init;
-        }
-        public void set(boolean val) {
-            this.val = val;
-        }
-
-        public boolean get() {
-            return val;
-        }
-    }
 
     public AutoFar(TeamColor color) {
         poses = color.poses;
@@ -75,6 +60,9 @@ public abstract class AutoFar extends LinearOpMode {
         intake = new Intake(hardwareMap, telemetry);
 
         sensor = new DistanceSensor(hardwareMap, telemetry);
+        turret.offset(-1);
+
+        timeout = new ElapsedTime();
     }
 
     private void buildChains() {
@@ -98,51 +86,46 @@ public abstract class AutoFar extends LinearOpMode {
                 .setDone(() -> !movement.getFollower().isBusy());
 
         Command takeDump = Command.build()
-                .setStart(() -> movement.getFollower().followPath(takeDumpChain))
+                .setStart(() -> {
+                    movement.getFollower().followPath(takeDumpChain);
+                    timeout.reset();
+                })
+//                .setExecute(() -> {
+////                    if (sensor.detectedFor(400)) {
+////                        movement.getFollower().breakFollowing();
+////                        movement.getFollower().followPath(paths.getReturn(movement.getFollower()));
+////                    }
+//                })
                 .setDone(() -> !movement.getFollower().isBusy());
 
-
         Command takeDump2 = Command.build()
-                .setStart(() -> movement.getFollower().followPath(takeDumpChain2))
+                .setStart(() -> {
+                    movement.getFollower().followPath(takeDumpChain2);
+                    timeout.reset();
+                })
+//                .setExecute(() -> {
+////                    if (sensor.detectedFor(400)) {
+////                        movement.getFollower().breakFollowing();
+////                        movement.getFollower().followPath(paths.getReturn(movement.getFollower()));
+////                    }
+//                })
                 .setDone(() -> !movement.getFollower().isBusy());
 
         Command takeHuman = Command.build()
                 .setStart(() -> movement.getFollower().followPath(takeHumanChain))
-                .setExecute(() -> {
-                    inDump.set(true);
-                })
-                .setDone(() -> !movement.getFollower().isBusy())
-                .setEnd((end) -> {
-                   inDump.set(false);
-                });
-
-        Command checkForFull = Command.build()
-                .setDone(() -> sensor.detectedFor(400) || !movement.getFollower().isBusy())
-                .setEnd((e) -> {
-                    if(!inDump.get()) return;
-
-                    movement.getFollower().breakFollowing();
-                    PathChain chain = paths.getReturn(movement.getFollower());
-                    movement.getFollower().followPath(chain);
-                });
+                .setDone(() -> !movement.getFollower().isBusy());
 
         Command takeDumpChain =
-                parallel(
-                        sequential(
-                                takeDump,
+                sequential(
+                        takeDump,
 //                                waitCommand(150),
-                                intake.getLaunchNoCloseCommand()
-                        ),
-                        checkForFull
+                        intake.getLaunchNoCloseCommand()
                 );
         Command takeDumpChain2 =
-                parallel(
-                        sequential(
-                                takeDump2,
+                sequential(
+                        takeDump2,
 //                                waitCommand(150),
-                                intake.getLaunchNoCloseCommand()
-                        ),
-                        checkForFull
+                        intake.getLaunchNoCloseCommand()
                 );
 
         Command park = Command.build()
