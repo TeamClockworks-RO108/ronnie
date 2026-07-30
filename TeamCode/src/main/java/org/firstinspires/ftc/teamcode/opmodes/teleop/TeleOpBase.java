@@ -73,9 +73,6 @@ public abstract class TeleOpBase extends OpMode {
         if (gamepad1.rightBumperWasPressed()) {
             Scheduler.schedule(intake.getTogglePowerCommand());
         }
-        if (gamepad1.crossWasPressed()) {
-            Scheduler.schedule(intake.getLaunchCommand());
-        }
         if (gamepad1.circleWasPressed()) {
             Scheduler.schedule(intake.getToggleDirectionCommand());
         }
@@ -86,24 +83,28 @@ public abstract class TeleOpBase extends OpMode {
         }
 
         if(gamepad1.dpadLeftWasPressed()) {
-            turret.offset(-1);
-        }
-        if(gamepad1.dpadRightWasPressed()) {
             turret.offset(1);
         }
-
-        if(gamepad1.squareWasPressed()) {
-            movement.getFollower().turnTo(
-                    color == TeamColor.RED ?
-                            Math.toRadians(0) :
-                            Math.toRadians(180)
-            );
+        if(gamepad1.dpadRightWasPressed()) {
+            turret.offset(-1);
         }
 
+        if(gamepad1.left_trigger == 0) {
+            if (gamepad1.right_trigger > 0) {
+                Scheduler.schedule(intake.getStartCommand());
+            }
+            if (gamepad1.right_trigger == 0) {
+                Scheduler.schedule(intake.getStopCommand());
+            }
+        }
 
-//        if(distanceSensor.detectedFor(500)) {
-//            Scheduler.schedule(intake.getStopCommand());
-//        }
+        if(gamepad1.right_trigger == 0) {
+            if (gamepad1.left_trigger > 0) {
+                Scheduler.schedule(intake.getManualOpenBarrierCommand());
+            } else {
+                Scheduler.schedule(intake.getManualCloseBarrierCommand());
+            }
+        }
 
         movement.update(gamepad1);
 
@@ -112,6 +113,8 @@ public abstract class TeleOpBase extends OpMode {
         distanceSensor.update();
         intake.update();
 
+        telemetry.addData("lt", gamepad1.left_trigger);
+        telemetry.addData("rt", gamepad1.right_trigger);
         telemetry.addData("latency (ms)", timer.milliseconds());
         drawRobotDashboard(movement.getFollower());
 

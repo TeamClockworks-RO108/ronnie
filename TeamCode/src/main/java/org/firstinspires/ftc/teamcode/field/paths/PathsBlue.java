@@ -20,13 +20,13 @@ public class PathsBlue implements Paths {
                         new BezierCurve(
                                 TeamColor.BLUE.poses.getAutoStart(Strategy.FAR),
                                 new Pose(50, 42),
-                                new Pose(12, 35.799)
+                                new Pose(12.5, 34.216)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .addPath(
                         new BezierLine(
-                                new Pose(12, 35.799),
+                                new Pose(12.5, 34.216),
                                 TeamColor.BLUE.poses.shootFar()
                         )
                 )
@@ -36,41 +36,41 @@ public class PathsBlue implements Paths {
 
     @Override
     public PathChain getDump(Follower follower, DistanceSensor sensor) {
-        if(idx == 0) {
-            idx = 1;
+//        return follower
+//                .pathBuilder()
+//                .addPath(
+//                        new BezierCurve(
+//                                TeamColor.BLUE.poses.shootFar(),
+//                                new Pose(12.133712660028449, 0),
+//                                new Pose(12, 33)
+//                        )
+//                )
+//                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(110))
+//                .addPath(new BezierLine(
+//                        new Pose(12, 33),
+//                        TeamColor.BLUE.poses.shootFar()
+//                ))
+//                .setTangentHeadingInterpolation()
+//                .setReversed()
+//                .build();
 
             return follower
                     .pathBuilder()
                     .addPath(
                             new BezierLine(
                                     TeamColor.BLUE.poses.shootFar(),
-                                    new Pose(12, 9)
+                                    new Pose(12, nextY[idx % nextY.length])
                             )
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(180))
                     .addPath(
                             new BezierLine(
-                                    new Pose(12, 9),
+                                    new Pose(12, nextY[idx++ % nextY.length]),
                                     TeamColor.BLUE.poses.shootFar()
                             )
                     )
                     .setConstantHeadingInterpolation(Math.toRadians(180))
                     .build();
-        } else {
-            idx = 0;
-
-            return follower
-                    .pathBuilder()
-                    .addPath(
-                            new BezierCurve(
-                                    TeamColor.BLUE.poses.shootFar(),
-                                    new Pose(50, 42),
-                                    new Pose(12, 35.799)
-                            )
-                    )
-                    .setConstantHeadingInterpolation(Math.toDegrees(180))
-                    .build();
-        }
     }
 
     @Override
@@ -92,13 +92,19 @@ public class PathsBlue implements Paths {
                 .addPath(
                         new BezierLine(
                                 TeamColor.BLUE.poses.shootFar(),
-                                new Pose(9, 9)
+                                new Pose(8.262, 12.481)
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+//                .addParametricCallback(0.6, () -> {
+//                    follower.setMaxPower(0.5);
+//                })
+//                .addParametricCallback(0.9, () -> {
+//                    follower.setMaxPower(1);
+//                })
+                .setConstantHeadingInterpolation(Math.toRadians(-170))
                 .addPath(
                         new BezierLine(
-                                new Pose(9, 9),
+                                new Pose(8.262, 12.481),
                                 TeamColor.BLUE.poses.shootFar()
                         )
                 )

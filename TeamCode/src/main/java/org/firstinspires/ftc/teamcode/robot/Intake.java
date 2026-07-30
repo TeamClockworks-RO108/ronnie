@@ -26,21 +26,19 @@ public class Intake {
 
     private final ElapsedTime timer;
 
-    private final Command launchCommand;
     private final Command togglePowerCommand;
     private final Command toggleReverseCommand;
     private final Command stopCommand;
-
     private final Command launchNoCloseCommand;
 
+    private final Command manualOpenBarrierCommand;
+    private final Command manualCloseBarrierCommand;
+    private final Command startCommand;
+
     private boolean reversed;
+
     private boolean running;
-
     private Telemetry telemetry;
-
-    private ElapsedTime stopCooldown;
-
-    public static double TRANSFER_POW = 0.9;
 
 
     public Intake(HardwareMap hardwareMap, Telemetry telemetry) {
@@ -56,8 +54,6 @@ public class Intake {
 
         barrier.setPosition(BARRIER_ON);
 
-        stopCooldown = new ElapsedTime();
-
         this.telemetry = telemetry;
 
         togglePowerCommand = Command.build()
@@ -65,28 +61,18 @@ public class Intake {
                 .setDone(() -> true)
                 .setEnd((__) -> updatePower());
 
-        toggleReverseCommand = Command.build()
-                .setStart(() -> reversed = !reversed)
-                .setDone(() -> true)
-                .setEnd((__) -> updatePower());
-
-        launchCommand = Command.build()
+        startCommand = Command.build()
                 .setStart(() -> {
                     running = true;
                     reversed = false;
                     updatePower();
-                    leftIntake.setPower(TRANSFER_POW);
-                    rightIntake.setPower(TRANSFER_POW);
-
-                    openBarrier();
-                    timer.reset();
                 })
-                .setDone(() -> timer.milliseconds() >= TIME_TO_SHOOT)
-                .setEnd((__) -> {
-                    closeBarrier();
-                    running = false;
-                    updatePower();
-                });
+                .setDone(() -> true);
+
+        toggleReverseCommand = Command.build()
+                .setStart(() -> reversed = !reversed)
+                .setDone(() -> true)
+                .setEnd((__) -> updatePower());
 
         launchNoCloseCommand = Command.build()
                 .setStart(() -> {
@@ -103,15 +89,28 @@ public class Intake {
                 });
 
         stopCommand = Command.build()
-                .setStart(() -> {
-                    if(stopCooldown.milliseconds() <= 2000) return;
-                    running = false;
-                })
+                .setStart(() -> running = false)
                 .setDone(() -> true)
                 .setEnd((__) -> {
                     updatePower();
-                    stopCooldown.reset();
                 });
+        manualOpenBarrierCommand = Command.build()
+                .setStart(() -> {
+                    running = true;
+                    reversed = false;
+                    updatePower();
+                    openBarrier();
+                })
+                .setDone(() -> true);
+
+        manualCloseBarrierCommand = Command.build()
+                .setStart(() -> {
+                    running = false;
+                    reversed = false;
+                    updatePower();
+                    closeBarrier();
+                })
+                .setDone(() -> true);
     }
 
     private void updatePower() {
@@ -156,14 +155,9 @@ public class Intake {
         barrier.setPosition(BARRIER_ON);
     }
 
-    public Command getLaunchCommand() {
-        return launchCommand;
-    }
-
     public Command getTogglePowerCommand() {
         return togglePowerCommand;
     }
-
     public Command getToggleDirectionCommand() {
         return toggleReverseCommand;
     }
@@ -176,4 +170,15 @@ public class Intake {
         return launchNoCloseCommand;
     }
 
+    public Command getManualOpenBarrierCommand() {
+        return manualOpenBarrierCommand;
+    }
+
+    public Command getManualCloseBarrierCommand() {
+        return manualCloseBarrierCommand;
+    }
+
+    public Command getStartCommand() {
+        return startCommand;
+    }
 }

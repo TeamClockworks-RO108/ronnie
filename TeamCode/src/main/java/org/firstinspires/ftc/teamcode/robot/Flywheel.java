@@ -27,7 +27,7 @@ public class Flywheel {
     private final Follower follower;
     private final Servo hoodServo;
 //    public static PIDFCoefficients constants = new PIDFCoefficients(0.007, 0, 0.0001, 0.00039);
-    public static PIDFCoefficients constants = new PIDFCoefficients(0.032, 0, 0.0001, 0.09);
+    public static PIDFCoefficients constants = new PIDFCoefficients(0.00835, 0.000001, 0.00006, 0.000357);
     public static double LINEAR_A = 1.68;
     public static double LINEAR_B = -0.905;
     private static double G = 9.80665;
@@ -78,6 +78,7 @@ public class Flywheel {
         interp.add(0, 1450);
         interp.add(131, 1450);
         interp.add(140, 1600);
+//        interp.add(150, 1700);
         interp.add(500, 1600);
 
         interp.createLUT();
@@ -88,10 +89,10 @@ public class Flywheel {
 
         updateSpeed();
 
-        pid.updateError(velocity - getVelocity());
-        double pow = pid.run();
+//        pid.updateError(velocity - getVelocity());
+//        double pow = pid.run();
 
-//        double pow = pidf.update(getVelocity(), velocity);
+        double pow = pidf.update(getVelocity(), velocity);
 
         leftMotor.setPower(pow);
         rightMotor.setPower(pow);

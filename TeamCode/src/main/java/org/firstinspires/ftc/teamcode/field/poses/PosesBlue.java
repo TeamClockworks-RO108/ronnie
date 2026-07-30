@@ -4,7 +4,7 @@ import com.pedropathing.geometry.Pose;
 
 @Configurable
 public class PosesBlue implements Poses{
-    public static double goalX = 2.95;
+    public static double goalX = 10;
     public static double goalY = 135.4;
 
     @Override
@@ -19,7 +19,7 @@ public class PosesBlue implements Poses{
 
     @Override
     public Pose autoFarStart() {
-        return new Pose(45.226, 7.7, Math.toRadians(180));
+        return new Pose(44.135, 10.516, Math.toRadians(180));
     }
 
     @Override
@@ -34,7 +34,7 @@ public class PosesBlue implements Poses{
 
     @Override
     public Pose shootFar() {
-        return new Pose(46.5, 15);
+        return new Pose(46.455, 17.392);
     }
 
     @Override

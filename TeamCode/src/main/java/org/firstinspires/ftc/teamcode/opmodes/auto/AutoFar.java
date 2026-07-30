@@ -40,9 +40,6 @@ public abstract class AutoFar extends LinearOpMode {
 
     private final TeamColor color;
     private ElapsedTime timeout;
-
-    private static final Pose goal = new Pose(134, 135);
-
     private static final int WARMUP_TIME = 1800;
 
 
@@ -56,11 +53,16 @@ public abstract class AutoFar extends LinearOpMode {
         movement = new PedroMovement(hardwareMap, telemetry, poses.getAutoStart(FAR));
 
         flywheel = new Flywheel(hardwareMap, telemetry, movement.getFollower(), poses);
-        turret = new Turret(hardwareMap, telemetry, movement, goal, true, color);
+        turret = new Turret(hardwareMap, telemetry, movement, poses.goal(), true, color);
         intake = new Intake(hardwareMap, telemetry);
 
         sensor = new DistanceSensor(hardwareMap, telemetry);
-        turret.offset(-1);
+
+        if(color == TeamColor.RED) {
+            turret.offset(-1);
+        } else if (color == TeamColor.BLUE) {
+           // turret.offset(1);
+        }
 
         timeout = new ElapsedTime();
     }
