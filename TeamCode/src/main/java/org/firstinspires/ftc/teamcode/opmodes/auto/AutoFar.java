@@ -53,7 +53,7 @@ public abstract class AutoFar extends LinearOpMode {
         movement = new PedroMovement(hardwareMap, telemetry, poses.getAutoStart(FAR));
 
         flywheel = new Flywheel(hardwareMap, telemetry, movement.getFollower(), poses);
-        turret = new Turret(hardwareMap, telemetry, movement, poses.goal(), true, color);
+        turret = new Turret(hardwareMap, telemetry, movement, poses, true, color);
         intake = new Intake(hardwareMap, telemetry);
 
         sensor = new DistanceSensor(hardwareMap, telemetry);

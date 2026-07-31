@@ -28,13 +28,12 @@ public class Turret {
 //    public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(0.75, 0.0, 0.0755 , 0);
     public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(0.9, 0.0, 0.038 , 0);
 
-    private final Pose goal;
-
     private TeamColor color;
+    private Poses poses;
 
     public static double OFFSET = 0;
 
-    public Turret(HardwareMap hardwareMap, Telemetry telemetry, PedroMovement movement, Pose goal,
+    public Turret(HardwareMap hardwareMap, Telemetry telemetry, PedroMovement movement, Poses poses,
                   boolean resetEncoders, TeamColor color) {
         this.color = color;
 
@@ -50,7 +49,7 @@ public class Turret {
         this.follower = movement.getFollower();
         this.movement = movement;
 
-        this.goal = goal;
+        this.poses = poses;
 
         pid = new PIDFController(pidfCoefficients);
 
@@ -69,7 +68,7 @@ public class Turret {
 
         setTurretPower(power);
 
-        double distanceToGoal = curr.distanceFrom(goal);
+        double distanceToGoal = curr.distanceFrom(poses.goal());
 
         telemetry.addData("Turret pow", power);
         telemetry.addData("Turret Encoder", getEncoder());
@@ -80,8 +79,8 @@ public class Turret {
         double angle = Math.toRadians(getEncoder() * 180 / TICKS_PER_180);
 
         double heading = follower.getHeading();
-        double x = goal.getX() - follower.getPose().getX();
-        double y = goal.getY() - follower.getPose().getY();
+        double x = poses.goal().getX() - follower.getPose().getX();
+        double y = poses.goal().getY() - follower.getPose().getY();
 
         telemetry.addData("Offset", OFFSET);
 
