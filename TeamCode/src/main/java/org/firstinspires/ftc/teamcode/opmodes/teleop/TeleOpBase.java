@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.field.poses.Poses;
 import org.firstinspires.ftc.teamcode.robot.DistanceSensor;
 import org.firstinspires.ftc.teamcode.robot.Flywheel;
 import org.firstinspires.ftc.teamcode.robot.Intake;
+import org.firstinspires.ftc.teamcode.robot.Lift;
 import org.firstinspires.ftc.teamcode.robot.PedroMovement;
 import org.firstinspires.ftc.teamcode.robot.Turret;
 import org.firstinspires.ftc.teamcode.util.Drawing;
@@ -34,6 +35,8 @@ public abstract class TeleOpBase extends OpMode {
     private final Strategy strategy;
 
     private DistanceSensor distanceSensor;
+
+  //  private Lift lift;
 
     public TeleOpBase(TeamColor color, Strategy strategy) {
         this.color = color;
@@ -56,6 +59,10 @@ public abstract class TeleOpBase extends OpMode {
         flywheel = new Flywheel(hardwareMap, telemetry, movement.getFollower(), poses);
         distanceSensor = new DistanceSensor(hardwareMap, telemetry);
 
+
+     //   lift = new Lift(hardwareMap, telemetry, false);
+
+
         timer = new ElapsedTime();
 
         RobotContext.setLastPose(null);
@@ -76,6 +83,15 @@ public abstract class TeleOpBase extends OpMode {
         if (gamepad1.circleWasPressed()) {
             Scheduler.schedule(intake.getToggleDirectionCommand());
         }
+
+//        if(gamepad1.triangleWasPressed()){
+//            if(lift.getLiftStatus()){
+//                lift.drop();
+//            }else lift.lift();
+//
+//        }
+
+
         if(gamepad1.dpadUpWasPressed()) {
             movement.getFollower().setX(poses.getResetPose().getX());
             movement.getFollower().setY(poses.getResetPose().getY());

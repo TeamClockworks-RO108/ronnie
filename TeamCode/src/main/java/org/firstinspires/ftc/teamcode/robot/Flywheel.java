@@ -32,7 +32,7 @@ public class Flywheel {
     public static double LINEAR_B = -0.905;
     private static double G = 9.80665;
     public static double V_TICKS_FAR = 1450;
-    public static double V_TICKS_CLOSE = 1300;
+    public static double V_TICKS_CLOSE = 1275; //1300
     public static double V_TICKS_VERY_FAR = 1650;
     private double velocity = .0;
     private static double ROBOT_H = 30.0 / 100;
