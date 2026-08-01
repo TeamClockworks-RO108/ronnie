@@ -4,7 +4,7 @@ import com.pedropathing.geometry.Pose;
 
 @Configurable
 public class PosesBlue implements Poses{
-    public static double goalX = 10;
+    public static double goalX = 13;
     public static double goalY = 135.4;
 
     @Override

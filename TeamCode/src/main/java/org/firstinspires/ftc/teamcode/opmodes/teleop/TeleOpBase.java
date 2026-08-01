@@ -54,7 +54,7 @@ public abstract class TeleOpBase extends OpMode {
         Pose startPose =  RobotContext.getLastPose().orElse(poses.getStart(strategy));
         movement = new PedroMovement(hardwareMap, telemetry,startPose);
         intake = new Intake(hardwareMap, telemetry);
-        turret = new Turret(hardwareMap, telemetry, movement, poses.goal(),
+        turret = new Turret(hardwareMap, telemetry, movement, poses,
                 RobotContext.getLastPose().isEmpty(), color);
         flywheel = new Flywheel(hardwareMap, telemetry, movement.getFollower(), poses);
         distanceSensor = new DistanceSensor(hardwareMap, telemetry);

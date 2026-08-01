@@ -27,7 +27,7 @@ public class Flywheel {
     private final Follower follower;
     private final Servo hoodServo;
 //    public static PIDFCoefficients constants = new PIDFCoefficients(0.007, 0, 0.0001, 0.00039);
-    public static PIDFCoefficients constants = new PIDFCoefficients(0.00835, 0.000001, 0.00006, 0.000357);
+    public static PIDFCoefficients constants = new PIDFCoefficients(0.0084, 0.000001, 0.00006, 0.000358);
     public static double LINEAR_A = 1.68;
     public static double LINEAR_B = -0.905;
     private static double G = 9.80665;
